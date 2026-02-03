@@ -1,10 +1,9 @@
-import { CapacitorConfig } from '@capacitor/cli';
-
-const config: CapacitorConfig = {
+/** @type {import('@capacitor/cli').CapacitorConfig} */
+const config = {
   appId: 'com.animate.html',
   appName: 'Adobe Animate',
   webDir: '.',
   bundledWebRuntime: false
 };
 
-export default config;
+module.exports = config;
