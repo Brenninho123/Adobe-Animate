@@ -31,10 +31,9 @@ jobs:
           java-version: 17
 
       - name: Add Android platform if missing
-        run: |
-          if [ ! -d "android" ]; then
-            npx cap add android
-          fi
+  run: |
+    npm install @capacitor/cli --save-dev
+    npx cap add android
 
       - name: Capacitor sync
         run: npx cap sync android
