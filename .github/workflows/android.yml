@@ -2,72 +2,58 @@ name: Android Build
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
-  build-android:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      # 📦 Checkout do repositório
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ☕ Java 17 (Android)
-      - name: Set up Java
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Clean npm cache
+        run: |
+          npm cache clean --force
+          rm -rf node_modules
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      # 🟢 Node.js
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
+      - name: Build web
+        run: npm run build
 
-      # 📥 Instalar dependências (SEM npm ci)
-      - name: Install dependencies
-        run: npm install
-
-      # 📁 Garantir webDir (evita erro do Capacitor)
-      - name: Create www folder
-        run: |
-          mkdir -p www
-          if [ ! -f "www/index.html" ]; then
-            echo '<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body></body></html>' > www/index.html
-          fi
-
-      # 🖼️ Gerar ícones (se existir)
-      - name: Generate assets
-        run: |
-          if [ -f "resources/icon.png" ]; then
-            npx cap assets
-          else
-            echo "⚠️ resources/icon.png não encontrado, pulando geração de ícones"
-          fi
-
-      # 🤖 Adicionar Android
-      - name: Add Android platform
-        run: |
-          if [ ! -d "android" ]; then
-            npx cap add android
-          fi
-
-      # 🔄 Sync Android
-      - name: Sync Android
+      - name: Capacitor sync
         run: npx cap sync android
 
-      # 🚀 Build APK (DEBUG = mais rápido e sem assinatura)
-      - name: Build APK Debug
+      - name: Decode keystore
         run: |
-          cd android
-          ./gradlew assembleDebug --no-daemon
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/app/release.keystore
 
-      # 📤 Upload do APK
+      - name: Build APK Release
+        working-directory: android
+        run: |
+          ./gradlew assembleRelease \
+            -Pandroid.injected.signing.store.file=app/release.keystore \
+            -Pandroid.injected.signing.store.password=${{ secrets.KEYSTORE_PASSWORD }} \
+            -Pandroid.injected.signing.key.alias=${{ secrets.KEY_ALIAS }} \
+            -Pandroid.injected.signing.key.password=${{ secrets.KEY_PASSWORD }}
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Adobe-Animate-debug-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: app-release
+          path: android/app/build/outputs/apk/release/*.apk
