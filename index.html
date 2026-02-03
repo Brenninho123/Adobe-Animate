@@ -1,107 +1,323 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <title>Adobe Animate</title>
+
 <style>
-body {
-  margin: 0;
-  background: #1e1e1e;
-  color: #fff;
-  font-family: sans-serif;
-  display: flex;
-  height: 100vh;
+body{
+  margin:0;
+  background:#1e1e1e;
+  color:#e0e0e0;
+  font-family:Segoe UI,sans-serif;
+  display:flex;
+  height:100vh;
+  overflow:hidden;
 }
-
-#tools {
-  width: 60px;
-  background: #2d2d2d;
-  padding: 10px;
+#tools,#layers{
+  background:#2d2d2d;
+  padding:6px;
+  border-right:1px solid #111;
 }
-
-#timeline {
-  height: 120px;
-  background: #252526;
-  overflow-x: auto;
-  white-space: nowrap;
+#tools{width:120px}
+#layers{width:180px}
+button,input{
+  width:100%;
+  margin-bottom:6px;
 }
-
-.frame {
-  display: inline-block;
-  width: 30px;
-  height: 30px;
-  margin: 4px;
-  background: #3a3a3a;
-  cursor: pointer;
+.layer{
+  background:#3a3a3a;
+  padding:4px;
+  margin-bottom:4px;
+  cursor:pointer;
 }
-
-.frame.active {
-  background: #007acc;
+.layer.active{background:#007acc}
+#main{
+  flex:1;
+  display:flex;
+  flex-direction:column;
 }
-
-#main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+#topbar{
+  height:28px;
+  background:#252526;
+  display:flex;
+  align-items:center;
+  padding-left:10px;
+  border-bottom:1px solid #111;
+  font-weight:bold;
 }
-
-canvas {
-  background: #fff;
+canvas{
+  background:white;
+  touch-action:none;
 }
+#timeline{
+  height:110px;
+  background:#252526;
+  display:flex;
+  align-items:center;
+  overflow-x:auto;
+}
+.frame{
+  width:26px;
+  height:26px;
+  margin:4px;
+  background:#3a3a3a;
+  font-size:11px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
+.frame.active{background:#007acc}
 </style>
 </head>
+
 <body>
 
 <div id="tools">
-  ✏️
+  <b>PENCILS</b>
+  <button onclick="tool='brush'">🖌 Brush</button>
+  <button onclick="tool='pencil'">✏ Pencil</button>
+  <button onclick="tool='eraser'">🧽 Eraser</button>
+  <input type="color" id="color" value="#000000">
+  <input type="range" id="size" min="1" max="30" value="4">
+  <hr>
+  <button onclick="togglePlay()">▶ Play</button>
+  <button onclick="onion=!onion">🧅 Onion</button>
+  <button onclick="exportSpritesheet()">🖼 Export</button>
+  <button onclick="saveFLA()">💾 Save .fla</button>
+  <button onclick="loadFLA()">📂 Open .fla</button>
+</div>
+
+<div id="layers">
+  <button onclick="addLayer()">＋ Layer</button>
 </div>
 
 <div id="main">
-  <canvas id="stage" width="800" height="450"></canvas>
+  <div id="topbar">Adobe Animate</div>
+  <canvas id="stage" width="960" height="540"></canvas>
   <div id="timeline"></div>
 </div>
 
 <script>
-const canvas = document.getElementById("stage");
-const ctx = canvas.getContext("2d");
+/* ===== CORE ===== */
+const canvas=document.getElementById("stage");
+const ctx=canvas.getContext("2d");
 
-let drawing = false;
-let frames = [];
-let currentFrame = 0;
+let tool="brush";
+let drawing=false;
+let onion=true;
+let playing=false;
+let fps=12;
 
-// cria frames
-for (let i = 0; i < 24; i++) {
-  frames.push(null);
-  const f = document.createElement("div");
-  f.className = "frame";
-  f.onclick = () => selectFrame(i);
-  document.getElementById("timeline").appendChild(f);
-}
+const TOTAL_FRAMES=24;
 
-function selectFrame(i) {
-  currentFrame = i;
-  document.querySelectorAll(".frame").forEach((f, idx) => {
-    f.classList.toggle("active", idx === i);
-  });
+/* ===== VIEW (ZOOM/PAN) ===== */
+let view={x:0,y:0,zoom:1};
+let panning=false;
+let lastPan={x:0,y:0};
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  if (frames[i]) ctx.putImageData(frames[i], 0, 0);
-}
+/* ===== PROJECT ===== */
+const project={
+  currentFrame:0,
+  currentLayer:0,
+  layers:[]
+};
 
-canvas.addEventListener("mousedown", () => drawing = true);
-canvas.addEventListener("mouseup", () => {
-  drawing = false;
-  frames[currentFrame] = ctx.getImageData(0,0,canvas.width,canvas.height);
-});
-canvas.addEventListener("mousemove", e => {
-  if (!drawing) return;
-  ctx.fillStyle = "black";
-  ctx.beginPath();
-  ctx.arc(e.offsetX, e.offsetY, 2, 0, Math.PI * 2);
-  ctx.fill();
-});
-
+/* ===== INIT ===== */
+addLayer();
+buildTimeline();
 selectFrame(0);
+
+/* ===== LAYERS ===== */
+function addLayer(){
+  project.layers.unshift({
+    name:"Layer "+(project.layers.length+1),
+    frames:Array(TOTAL_FRAMES).fill(null)
+  });
+  project.currentLayer=0;
+  redrawLayers();
+}
+function redrawLayers(){
+  const el=document.getElementById("layers");
+  el.innerHTML='<button onclick="addLayer()">＋ Layer</button>';
+  project.layers.forEach((l,i)=>{
+    const d=document.createElement("div");
+    d.className="layer"+(i===project.currentLayer?" active":"");
+    d.textContent=l.name;
+    d.onclick=()=>{
+      project.currentLayer=i;
+      redrawLayers();
+      redraw();
+    };
+    el.appendChild(d);
+  });
+}
+
+/* ===== TIMELINE ===== */
+function buildTimeline(){
+  const tl=document.getElementById("timeline");
+  tl.innerHTML="";
+  for(let i=0;i<TOTAL_FRAMES;i++){
+    const f=document.createElement("div");
+    f.className="frame";
+    f.textContent=i+1;
+    f.onclick=()=>selectFrame(i);
+    tl.appendChild(f);
+  }
+}
+function selectFrame(i){
+  project.currentFrame=i;
+  document.querySelectorAll(".frame").forEach((f,idx)=>{
+    f.classList.toggle("active",idx===i);
+  });
+  redraw();
+}
+
+/* ===== DRAW (MOUSE + TOUCH) ===== */
+function getPos(evt){
+  const r=canvas.getBoundingClientRect();
+  const e=evt.touches?evt.touches[0]:evt;
+  return{
+    x:(e.clientX-r.left-view.x)/view.zoom,
+    y:(e.clientY-r.top-view.y)/view.zoom
+  };
+}
+function startDraw(e){
+  if(panning)return;
+  drawing=true;
+  const p=getPos(e);
+  ctx.beginPath();
+  ctx.moveTo(p.x,p.y);
+}
+function moveDraw(e){
+  if(!drawing)return;
+  e.preventDefault();
+  const p=getPos(e);
+  ctx.strokeStyle=document.getElementById("color").value;
+  ctx.lineWidth=document.getElementById("size").value;
+  ctx.lineCap="round";
+  ctx.globalCompositeOperation=
+    tool==="eraser"?"destination-out":"source-over";
+  ctx.lineTo(p.x,p.y);
+  ctx.stroke();
+}
+function endDraw(){
+  if(!drawing)return;
+  drawing=false;
+  ctx.beginPath();
+  project.layers[project.currentLayer]
+    .frames[project.currentFrame]=
+    ctx.getImageData(0,0,canvas.width,canvas.height);
+}
+
+canvas.addEventListener("mousedown",startDraw);
+canvas.addEventListener("mousemove",moveDraw);
+canvas.addEventListener("mouseup",endDraw);
+canvas.addEventListener("mouseleave",endDraw);
+canvas.addEventListener("touchstart",startDraw,{passive:false});
+canvas.addEventListener("touchmove",moveDraw,{passive:false});
+canvas.addEventListener("touchend",endDraw);
+
+/* ===== ZOOM / PAN ===== */
+canvas.addEventListener("wheel",e=>{
+  e.preventDefault();
+  view.zoom+=e.deltaY*-0.001;
+  view.zoom=Math.min(Math.max(0.2,view.zoom),5);
+  redraw();
+},{passive:false});
+
+window.addEventListener("keydown",e=>{
+  if(e.code==="Space")panning=true;
+});
+window.addEventListener("keyup",e=>{
+  if(e.code==="Space")panning=false;
+});
+
+canvas.addEventListener("mousedown",e=>{
+  if(!panning)return;
+  lastPan={x:e.clientX,y:e.clientY};
+});
+canvas.addEventListener("mousemove",e=>{
+  if(!panning)return;
+  view.x+=e.clientX-lastPan.x;
+  view.y+=e.clientY-lastPan.y;
+  lastPan={x:e.clientX,y:e.clientY};
+  redraw();
+});
+
+/* ===== RENDER ===== */
+function redraw(){
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.setTransform(view.zoom,0,0,view.zoom,view.x,view.y);
+
+  project.layers.forEach((layer,idx)=>{
+    const frame=layer.frames[project.currentFrame];
+    if(!frame)return;
+    if(onion&&idx===project.currentLayer){
+      const prev=layer.frames[project.currentFrame-1];
+      if(prev){
+        ctx.globalAlpha=0.3;
+        ctx.putImageData(prev,0,0);
+        ctx.globalAlpha=1;
+      }
+    }
+    ctx.putImageData(frame,0,0);
+  });
+}
+
+/* ===== PLAY ===== */
+function togglePlay(){playing=!playing;}
+setInterval(()=>{
+  if(!playing)return;
+  project.currentFrame=(project.currentFrame+1)%TOTAL_FRAMES;
+  selectFrame(project.currentFrame);
+},1000/fps);
+
+/* ===== EXPORT ===== */
+function exportSpritesheet(){
+  const c=document.createElement("canvas");
+  c.width=canvas.width*TOTAL_FRAMES;
+  c.height=canvas.height;
+  const cx=c.getContext("2d");
+
+  for(let i=0;i<TOTAL_FRAMES;i++){
+    project.currentFrame=i;
+    redraw();
+    cx.drawImage(canvas,i*canvas.width,0);
+  }
+  const a=document.createElement("a");
+  a.href=c.toDataURL("image/png");
+  a.download="spritesheet.png";
+  a.click();
+}
+
+/* ===== SAVE / LOAD .FLA ===== */
+function saveFLA(){
+  const blob=new Blob([JSON.stringify(project)],
+    {type:"application/octet-stream"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="project.fla";
+  a.click();
+}
+function loadFLA(){
+  const i=document.createElement("input");
+  i.type="file";
+  i.accept=".fla";
+  i.onchange=e=>{
+    const r=new FileReader();
+    r.onload=()=>{
+      Object.assign(project,JSON.parse(r.result));
+      redrawLayers();
+      buildTimeline();
+      selectFrame(project.currentFrame);
+    };
+    r.readAsText(e.target.files[0]);
+  };
+  i.click();
+}
 </script>
 
 </body>
