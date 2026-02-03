@@ -2,8 +2,7 @@
 const config = {
   appId: 'com.animate.html',
   appName: 'Adobe Animate',
-  webDir: '.',
-  bundledWebRuntime: false
+  webDir: 'www'
 };
 
 module.exports = config;
