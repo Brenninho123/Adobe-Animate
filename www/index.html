@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Adobe Animate</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      touch-action: none;
+      user-select: none;
+    }
+
+    body {
+      margin: 0;
+      background: #1e1e1e;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    #topbar {
+      height: 48px;
+      background: #111;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      gap: 10px;
+    }
+
+    button {
+      background: #2a2a2a;
+      border: none;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    button.active {
+      background: #0078ff;
+    }
+
+    #workspace {
+      display: flex;
+      height: calc(100vh - 48px);
+    }
+
+    #tools {
+      width: 56px;
+      background: #151515;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 8px;
+      gap: 8px;
+    }
+
+    #canvas-container {
+      flex: 1;
+      background: #999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    canvas {
+      background: white;
+      border: 1px solid #666;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="topbar">
+    <strong>Adobe Animate</strong>
+    <button id="clearBtn">Limpar</button>
+  </div>
+
+  <div id="workspace">
+    <div id="tools">
+      <button id="pencilBtn" class="active">✏️</button>
+    </div>
+
+    <div id="canvas-container">
+      <canvas id="canvas" width="800" height="600"></canvas>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    let drawing = false;
+    let tool = 'pencil';
+
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = '#000';
+
+    function getPos(e) {
+      if (e.touches) {
+        return {
+          x: e.touches[0].clientX - canvas.getBoundingClientRect().left,
+          y: e.touches[0].clientY - canvas.getBoundingClientRect().top
+        };
+      }
+      return {
+        x: e.offsetX,
+        y: e.offsetY
+      };
+    }
+
+    function startDraw(e) {
+      drawing = true;
+      const pos = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+    }
+
+    function draw(e) {
+      if (!drawing) return;
+      const pos = getPos(e);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+    }
+
+    function endDraw() {
+      drawing = false;
+      ctx.closePath();
+    }
+
+    // Mouse
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', endDraw);
+    canvas.addEventListener('mouseleave', endDraw);
+
+    // Touch
+    canvas.addEventListener('touchstart', startDraw);
+    canvas.addEventListener('touchmove', draw);
+    canvas.addEventListener('touchend', endDraw);
+
+    // UI
+    document.getElementById('clearBtn').onclick = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    };
+
+    document.getElementById('pencilBtn').onclick = () => {
+      tool = 'pencil';
+      document.getElementById('pencilBtn').classList.add('active');
+    };
+  </script>
+
+</body>
+</html>
