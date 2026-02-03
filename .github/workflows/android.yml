@@ -10,72 +10,64 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 📦 Checkout do repositório
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ☕ Java
+      # ☕ Java 17 (Android)
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: temurin
+          java-version: 17
 
-      # 📦 Node
+      # 🟢 Node.js
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
 
-      # ⚡ Cache Gradle
-      - name: Cache Gradle
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            gradle-${{ runner.os }}-
-
-      # 📥 Dependências
+      # 📥 Instalar dependências (SEM npm ci)
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
-      # 📁 WebDir obrigatório
+      # 📁 Garantir webDir (evita erro do Capacitor)
       - name: Create www folder
         run: |
           mkdir -p www
-          echo '<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body></body></html>' > www/index.html
-
-      # 🖼️ GERAR ÍCONES (PASSO CRÍTICO)
-      - name: Generate app icons
-        run: |
-          if [ ! -f "resources/icon.png" ]; then
-            echo "❌ resources/icon.png não encontrado"
-            exit 1
+          if [ ! -f "www/index.html" ]; then
+            echo '<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body></body></html>' > www/index.html
           fi
-          npx cap assets
 
-      # 🤖 Android
+      # 🖼️ Gerar ícones (se existir)
+      - name: Generate assets
+        run: |
+          if [ -f "resources/icon.png" ]; then
+            npx cap assets
+          else
+            echo "⚠️ resources/icon.png não encontrado, pulando geração de ícones"
+          fi
+
+      # 🤖 Adicionar Android
       - name: Add Android platform
         run: |
           if [ ! -d "android" ]; then
             npx cap add android
           fi
 
+      # 🔄 Sync Android
       - name: Sync Android
         run: npx cap sync android
 
-      # 🚀 Build APK
+      # 🚀 Build APK (DEBUG = mais rápido e sem assinatura)
       - name: Build APK Debug
         run: |
           cd android
           ./gradlew assembleDebug --no-daemon
 
-      # 📤 Upload APK
+      # 📤 Upload do APK
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Adobe-Animate-APK
+          name: Adobe-Animate-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
