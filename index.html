@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HTML Animate</title>
+
+<style>
+body {
+  margin: 0;
+  background: #1e1e1e;
+  color: #fff;
+  font-family: sans-serif;
+  display: flex;
+  height: 100vh;
+}
+
+#tools {
+  width: 80px;
+  background: #2d2d2d;
+  padding: 10px;
+}
+
+#tools button {
+  width: 100%;
+  margin-bottom: 6px;
+}
+
+#main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+canvas {
+  background: white;
+  cursor: crosshair;
+}
+
+#timeline {
+  height: 120px;
+  background: #252526;
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+}
+
+.frame {
+  width: 30px;
+  height: 30px;
+  margin: 4px;
+  background: #3a3a3a;
+  cursor: pointer;
+}
+
+.frame.active {
+  background: #007acc;
+}
+</style>
+</head>
+
+<body>
+
+<div id="tools">
+  <button onclick="togglePlay()">▶️</button>
+  <button onclick="onion = !onion">🧅</button>
+</div>
+
+<div id="main">
+  <canvas id="stage" width="800" height="450"></canvas>
+  <div id="timeline"></div>
+</div>
+
+<script>
+const canvas = document.getElementById("stage");
+const ctx = canvas.getContext("2d");
+
+let drawing = false;
+let frames = [];
+let currentFrame = 0;
+let playing = false;
+let onion = true;
+let fps = 12;
+
+// cria frames
+for (let i = 0; i < 24; i++) {
+  frames.push(null);
+  const f = document.createElement("div");
+  f.className = "frame";
+  f.onclick = () => selectFrame(i);
+  document.getElementById("timeline").appendChild(f);
+}
+
+function selectFrame(i) {
+  currentFrame = i;
+  updateUI();
+  redraw();
+}
+
+function updateUI() {
+  document.querySelectorAll(".frame").forEach((f, idx) => {
+    f.classList.toggle("active", idx === currentFrame);
+  });
+}
+
+function redraw() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  // onion skin
+  if (onion && frames[currentFrame - 1]) {
+    ctx.globalAlpha = 0.3;
+    ctx.putImageData(frames[currentFrame - 1], 0, 0);
+    ctx.globalAlpha = 1;
+  }
+
+  if (frames[currentFrame])
+    ctx.putImageData(frames[currentFrame], 0, 0);
+}
+
+canvas.addEventListener("mousedown", () => drawing = true);
+canvas.addEventListener("mouseup", () => {
+  drawing = false;
+  frames[currentFrame] = ctx.getImageData(0,0,canvas.width,canvas.height);
+});
+canvas.addEventListener("mousemove", e => {
+  if (!drawing) return;
+  ctx.fillStyle = "black";
+  ctx.beginPath();
+  ctx.arc(e.offsetX, e.offsetY, 2, 0, Math.PI * 2);
+  ctx.fill();
+});
+
+function togglePlay() {
+  playing = !playing;
+}
+
+setInterval(() => {
+  if (!playing) return;
+  currentFrame = (currentFrame + 1) % frames.length;
+  updateUI();
+  redraw();
+}, 1000 / fps);
+
+selectFrame(0);
+</script>
+
+</body>
+</html>
