@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>HTML Animate</title>
-
 <style>
 body {
   margin: 0;
@@ -15,36 +14,20 @@ body {
 }
 
 #tools {
-  width: 80px;
+  width: 60px;
   background: #2d2d2d;
   padding: 10px;
-}
-
-#tools button {
-  width: 100%;
-  margin-bottom: 6px;
-}
-
-#main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-canvas {
-  background: white;
-  cursor: crosshair;
 }
 
 #timeline {
   height: 120px;
   background: #252526;
-  display: flex;
-  align-items: center;
   overflow-x: auto;
+  white-space: nowrap;
 }
 
 .frame {
+  display: inline-block;
   width: 30px;
   height: 30px;
   margin: 4px;
@@ -55,14 +38,22 @@ canvas {
 .frame.active {
   background: #007acc;
 }
+
+#main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+canvas {
+  background: #fff;
+}
 </style>
 </head>
-
 <body>
 
 <div id="tools">
-  <button onclick="togglePlay()">▶️</button>
-  <button onclick="onion = !onion">🧅</button>
+  ✏️
 </div>
 
 <div id="main">
@@ -77,9 +68,6 @@ const ctx = canvas.getContext("2d");
 let drawing = false;
 let frames = [];
 let currentFrame = 0;
-let playing = false;
-let onion = true;
-let fps = 12;
 
 // cria frames
 for (let i = 0; i < 24; i++) {
@@ -92,28 +80,12 @@ for (let i = 0; i < 24; i++) {
 
 function selectFrame(i) {
   currentFrame = i;
-  updateUI();
-  redraw();
-}
-
-function updateUI() {
   document.querySelectorAll(".frame").forEach((f, idx) => {
-    f.classList.toggle("active", idx === currentFrame);
+    f.classList.toggle("active", idx === i);
   });
-}
 
-function redraw() {
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-
-  // onion skin
-  if (onion && frames[currentFrame - 1]) {
-    ctx.globalAlpha = 0.3;
-    ctx.putImageData(frames[currentFrame - 1], 0, 0);
-    ctx.globalAlpha = 1;
-  }
-
-  if (frames[currentFrame])
-    ctx.putImageData(frames[currentFrame], 0, 0);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (frames[i]) ctx.putImageData(frames[i], 0, 0);
 }
 
 canvas.addEventListener("mousedown", () => drawing = true);
@@ -128,17 +100,6 @@ canvas.addEventListener("mousemove", e => {
   ctx.arc(e.offsetX, e.offsetY, 2, 0, Math.PI * 2);
   ctx.fill();
 });
-
-function togglePlay() {
-  playing = !playing;
-}
-
-setInterval(() => {
-  if (!playing) return;
-  currentFrame = (currentFrame + 1) % frames.length;
-  updateUI();
-  redraw();
-}, 1000 / fps);
 
 selectFrame(0);
 </script>
