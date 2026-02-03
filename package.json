@@ -1,18 +1,23 @@
 {
-  "name": "adobe-animate-html",
+  "name": "adobe-animate",
   "version": "1.0.0",
+  "description": "Adobe Animate HTML Android App",
+  "author": "Ander",
   "private": true,
-  "description": "Adobe Animate-like app built with HTML and Capacitor",
+
   "scripts": {
     "start": "npx cap serve",
-    "android": "npx cap open android",
-    "sync": "npx cap sync android"
+    "android": "npx cap open android"
   },
-  "dependencies": {
-    "@capacitor/android": "^6.0.0",
-    "@capacitor/core": "^6.0.0"
+
+  "app": {
+    "icon": "resources/icon.png"
   },
-  "devDependencies": {
-    "@capacitor/cli": "^6.0.0"
+
+  "capacitor": {
+    "appId": "com.ander.animate",
+    "appName": "Adobe Animate",
+    "webDir": "www",
+    "bundledWebRuntime": false
   }
 }
