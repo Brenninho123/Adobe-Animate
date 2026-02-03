@@ -2,7 +2,17 @@
 const config = {
   appId: 'com.animate.html',
   appName: 'Adobe Animate',
-  webDir: 'www'
+  webDir: 'www',
+
+  bundledWebRuntime: false,
+
+  android: {
+    allowMixedContent: true
+  },
+
+  server: {
+    androidScheme: 'https'
+  }
 };
 
 module.exports = config;
