@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>Adobe Animate CC 2024</title>
@@ -21,6 +21,7 @@ body {
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
+  user-select: none;
 }
 
 /* ===== MENU BAR ===== */
@@ -159,6 +160,15 @@ body {
   background: white;
   box-shadow: 0 0 0 1px #000, 0 4px 20px rgba(0,0,0,0.5);
   touch-action: none;
+  cursor: crosshair;
+}
+
+#stage.grabbing {
+  cursor: grabbing !important;
+}
+
+#stage.grab {
+  cursor: grab !important;
 }
 
 /* ===== RIGHT PANEL (PROPERTIES + LIBRARY) ===== */
@@ -184,7 +194,7 @@ body {
 }
 
 #properties {
-  height: 250px;
+  height: 280px;
   padding: 10px;
   border-bottom: 1px solid #1e1e1e;
   overflow-y: auto;
@@ -193,11 +203,11 @@ body {
 .property-row {
   display: flex;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .property-label {
-  width: 80px;
+  width: 90px;
   font-size: 11px;
   color: #999;
 }
@@ -207,7 +217,7 @@ body {
   background: #3e3e42;
   border: 1px solid #3e3e42;
   color: #d4d4d4;
-  padding: 4px 8px;
+  padding: 5px 8px;
   border-radius: 3px;
   font-size: 11px;
 }
@@ -217,10 +227,28 @@ body {
   border-color: #007acc;
 }
 
+.property-value {
+  background: #2d2d30;
+  padding: 5px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  color: #d4d4d4;
+  flex: 1;
+}
+
 #library {
   flex: 1;
   padding: 10px;
   overflow-y: auto;
+}
+
+.section-title {
+  font-size: 10px;
+  color: #999;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  margin-top: 12px;
+  font-weight: 600;
 }
 
 /* ===== BOTTOM PANEL (TIMELINE) ===== */
@@ -233,34 +261,40 @@ body {
 }
 
 #timeline-header {
-  height: 28px;
+  height: 32px;
   background: #2d2d30;
   border-bottom: 1px solid #1e1e1e;
   display: flex;
   align-items: center;
   padding: 0 10px;
-  gap: 10px;
+  gap: 8px;
 }
 
 .timeline-btn {
   background: #3e3e42;
   border: none;
   color: #d4d4d4;
-  padding: 4px 10px;
+  padding: 5px 12px;
   border-radius: 3px;
   cursor: pointer;
   font-size: 11px;
   transition: background 0.2s;
+  white-space: nowrap;
 }
 
 .timeline-btn:hover {
   background: #505053;
 }
 
+.timeline-btn:active {
+  background: #007acc;
+}
+
 #timeline-main {
   flex: 1;
   display: flex;
   overflow: hidden;
+  position: relative;
 }
 
 #layers-panel {
@@ -337,8 +371,8 @@ body {
 
 #frames-panel {
   flex: 1;
-  overflow-x: auto;
-  overflow-y: auto;
+  overflow: auto;
+  position: relative;
 }
 
 .frames-header {
@@ -346,6 +380,9 @@ body {
   background: #252526;
   border-bottom: 1px solid #1e1e1e;
   display: flex;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .frame-number {
@@ -403,17 +440,7 @@ body {
 }
 
 .frame-cell.current {
-  background: #ff0000;
-}
-
-.frame-cell.current::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: #ff0000;
+  background: #ff4444;
 }
 
 .frame-cell.span {
@@ -427,6 +454,8 @@ body {
   width: 20px;
   height: 100%;
   pointer-events: none;
+  z-index: 5;
+  transition: left 0.1s linear;
 }
 
 .playhead-top {
@@ -442,50 +471,77 @@ body {
 
 .playhead-line {
   width: 2px;
-  height: 100%;
+  height: calc(100% - 30px);
   background: #ff0000;
   position: absolute;
-  top: 10px;
+  top: 30px;
   left: 9px;
 }
 
 /* ===== ZOOM CONTROL ===== */
 #zoom-control {
   position: absolute;
-  bottom: 10px;
-  right: 10px;
+  bottom: 15px;
+  right: 15px;
   display: flex;
   gap: 5px;
-  background: #2d2d30;
-  padding: 5px;
-  border-radius: 4px;
+  background: rgba(45, 45, 48, 0.95);
+  padding: 6px;
+  border-radius: 5px;
   border: 1px solid #1e1e1e;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
 }
 
 .zoom-btn {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   background: #3e3e42;
   border: none;
   color: #d4d4d4;
   border-radius: 3px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .zoom-btn:hover {
   background: #505053;
 }
 
+.zoom-btn:active {
+  background: #007acc;
+}
+
 #zoom-display {
-  padding: 0 10px;
+  padding: 0 12px;
   display: flex;
   align-items: center;
   color: #d4d4d4;
   font-size: 11px;
-  min-width: 50px;
+  min-width: 60px;
   justify-content: center;
+  font-weight: 600;
+}
+
+/* ===== STATUS BAR ===== */
+#status-bar {
+  height: 24px;
+  background: #007acc;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  font-size: 11px;
+  color: white;
+  gap: 20px;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 /* ===== SCROLLBAR ===== */
@@ -516,6 +572,44 @@ input[type="color"] {
   border-radius: 3px;
   cursor: pointer;
 }
+
+input[type="number"],
+input[type="range"] {
+  width: 100%;
+}
+
+input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+/* ===== NOTIFICATIONS ===== */
+.notification {
+  position: fixed;
+  top: 50px;
+  right: 20px;
+  background: #2d2d30;
+  border: 1px solid #007acc;
+  border-radius: 5px;
+  padding: 12px 20px;
+  color: #d4d4d4;
+  font-size: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  z-index: 1000;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
 </style>
 </head>
 
@@ -538,25 +632,25 @@ input[type="color"] {
 <!-- TOOLBAR -->
 <div id="toolbar">
   <div class="tool-group">
-    <button class="tool-btn" onclick="tool='select'" title="Selection Tool (V)">↖</button>
-    <button class="tool-btn" onclick="tool='subselect'" title="Subselection Tool (A)">⬚</button>
+    <button class="tool-btn" onclick="setTool('select')" title="Selection Tool (V)">↖</button>
+    <button class="tool-btn" onclick="setTool('subselect')" title="Subselection Tool (A)">⬚</button>
   </div>
   <div class="tool-group">
-    <button class="tool-btn" onclick="tool='text'" title="Text Tool (T)">T</button>
-    <button class="tool-btn" onclick="tool='line'" title="Line Tool (N)">╱</button>
+    <button class="tool-btn" onclick="setTool('text')" title="Text Tool (T)">T</button>
+    <button class="tool-btn" onclick="setTool('line')" title="Line Tool (N)">╱</button>
   </div>
   <div class="tool-group">
-    <button class="tool-btn active" onclick="setTool('brush')" title="Brush Tool (B)">🖌</button>
-    <button class="tool-btn" onclick="setTool('pencil')" title="Pencil Tool (Y)">✏</button>
-    <button class="tool-btn" onclick="setTool('eraser')" title="Eraser Tool (E)">🧽</button>
+    <button class="tool-btn active" id="brush-tool" onclick="setTool('brush')" title="Brush Tool (B)">🖌</button>
+    <button class="tool-btn" id="pencil-tool" onclick="setTool('pencil')" title="Pencil Tool (Y)">✏</button>
+    <button class="tool-btn" id="eraser-tool" onclick="setTool('eraser')" title="Eraser Tool (E)">🧽</button>
   </div>
   <div class="tool-group">
-    <button class="tool-btn" onclick="tool='fill'" title="Paint Bucket (K)">🪣</button>
-    <button class="tool-btn" onclick="tool='eyedropper'" title="Eyedropper (I)">💧</button>
+    <button class="tool-btn" onclick="setTool('rectangle')" title="Rectangle Tool (R)">▭</button>
+    <button class="tool-btn" onclick="setTool('oval')" title="Oval Tool (O)">○</button>
   </div>
   <div class="tool-group">
-    <button class="tool-btn" onclick="tool='hand'" title="Hand Tool (H)">✋</button>
-    <button class="tool-btn" onclick="tool='zoom'" title="Zoom Tool (Z)">🔍</button>
+    <button class="tool-btn" id="hand-tool" onclick="setTool('hand')" title="Hand Tool (H)">✋</button>
+    <button class="tool-btn" onclick="setTool('zoom')" title="Zoom Tool (Z)">🔍</button>
   </div>
 </div>
 
@@ -565,17 +659,17 @@ input[type="color"] {
   
   <!-- LEFT TOOLS PANEL -->
   <div id="tools-panel">
-    <div class="tool-icon active" onclick="setTool('select')" title="Selection (V)">↖</div>
-    <div class="tool-icon" onclick="setTool('brush')" title="Brush (B)">🖌</div>
-    <div class="tool-icon" onclick="setTool('pencil')" title="Pencil (Y)">✏</div>
-    <div class="tool-icon" onclick="setTool('eraser')" title="Eraser (E)">🧽</div>
+    <div class="tool-icon" data-tool="select" onclick="setTool('select')" title="Selection (V)">↖</div>
+    <div class="tool-icon active" data-tool="brush" onclick="setTool('brush')" title="Brush (B)">🖌</div>
+    <div class="tool-icon" data-tool="pencil" onclick="setTool('pencil')" title="Pencil (Y)">✏</div>
+    <div class="tool-icon" data-tool="eraser" onclick="setTool('eraser')" title="Eraser (E)">🧽</div>
     <div class="tool-separator"></div>
-    <div class="tool-icon" onclick="setTool('rectangle')" title="Rectangle (R)">▭</div>
-    <div class="tool-icon" onclick="setTool('circle')" title="Oval (O)">○</div>
-    <div class="tool-icon" onclick="setTool('text')" title="Text (T)">T</div>
+    <div class="tool-icon" data-tool="rectangle" onclick="setTool('rectangle')" title="Rectangle (R)">▭</div>
+    <div class="tool-icon" data-tool="oval" onclick="setTool('oval')" title="Oval (O)">○</div>
+    <div class="tool-icon" data-tool="line" onclick="setTool('line')" title="Line (N)">╱</div>
     <div class="tool-separator"></div>
-    <div class="tool-icon" onclick="setTool('hand')" title="Hand (H)">✋</div>
-    <div class="tool-icon" onclick="setTool('zoom')" title="Zoom (Z)">🔍</div>
+    <div class="tool-icon" data-tool="hand" onclick="setTool('hand')" title="Hand (H)">✋</div>
+    <div class="tool-icon" data-tool="zoom" onclick="setTool('zoom')" title="Zoom (Z)">🔍</div>
   </div>
 
   <!-- STAGE CONTAINER -->
@@ -585,9 +679,10 @@ input[type="color"] {
       
       <!-- ZOOM CONTROL -->
       <div id="zoom-control">
-        <button class="zoom-btn" onclick="zoomOut()">−</button>
+        <button class="zoom-btn" onclick="zoomOut()" title="Zoom Out">−</button>
         <div id="zoom-display">100%</div>
-        <button class="zoom-btn" onclick="zoomIn()">+</button>
+        <button class="zoom-btn" onclick="zoomIn()" title="Zoom In">+</button>
+        <button class="zoom-btn" onclick="resetZoom()" title="Reset Zoom (Ctrl+0)">⊙</button>
       </div>
     </div>
   </div>
@@ -599,26 +694,47 @@ input[type="color"] {
     <div>
       <div class="panel-header">PROPERTIES</div>
       <div id="properties">
+        <div class="section-title">Document</div>
+        
         <div class="property-row">
-          <div class="property-label">Frame:</div>
-          <div class="property-input" id="frame-display" style="background:#2d2d30;">1</div>
+          <div class="property-label">Current Frame:</div>
+          <div class="property-value" id="frame-display">1</div>
         </div>
+        
         <div class="property-row">
           <div class="property-label">FPS:</div>
           <input type="number" class="property-input" id="fps-input" value="12" min="1" max="60" onchange="updateFPS()">
         </div>
+        
+        <div class="section-title">Tool</div>
+        
         <div class="property-row">
-          <div class="property-label">Fill:</div>
-          <input type="color" id="color" value="#000000">
+          <div class="property-label">Fill Color:</div>
+          <input type="color" id="color" value="#000000" onchange="updateToolDisplay()">
         </div>
+        
         <div class="property-row">
-          <div class="property-label">Stroke:</div>
+          <div class="property-label">Stroke Size:</div>
           <input type="range" id="size" min="1" max="50" value="4" oninput="updateStrokeSize()">
-          <span id="stroke-size-display" style="margin-left:8px;font-size:10px;">4</span>
+          <span id="stroke-size-display" style="margin-left:8px;font-size:10px;min-width:30px;">4 px</span>
         </div>
+        
+        <div class="property-row">
+          <div class="property-label">Smoothing:</div>
+          <input type="range" id="smoothing" min="0" max="100" value="50" oninput="updateSmoothing()">
+          <span id="smoothing-display" style="margin-left:8px;font-size:10px;min-width:30px;">50%</span>
+        </div>
+        
+        <div class="section-title">View</div>
+        
         <div class="property-row">
           <div class="property-label">Onion Skin:</div>
-          <input type="checkbox" id="onion-toggle" checked onchange="onion=this.checked;redraw()">
+          <input type="checkbox" id="onion-toggle" checked onchange="toggleOnionSkin()">
+        </div>
+        
+        <div class="property-row">
+          <div class="property-label">Grid:</div>
+          <input type="checkbox" id="grid-toggle" onchange="toggleGrid()">
         </div>
       </div>
     </div>
@@ -628,7 +744,8 @@ input[type="color"] {
       <div class="panel-header">LIBRARY</div>
       <div id="library">
         <div style="color:#999;font-size:11px;padding:20px;text-align:center;">
-          No symbols in library
+          No symbols in library<br>
+          <small style="font-size:10px;">Create symbols to reuse artwork</small>
         </div>
       </div>
     </div>
@@ -639,13 +756,19 @@ input[type="color"] {
 <!-- BOTTOM TIMELINE PANEL -->
 <div id="bottom-panel">
   <div id="timeline-header">
-    <button class="timeline-btn" onclick="addLayer()">+ Layer</button>
-    <button class="timeline-btn" onclick="insertKeyframe()">Insert Keyframe (F6)</button>
-    <button class="timeline-btn" onclick="clearKeyframe()">Clear Keyframe</button>
-    <button class="timeline-btn" onclick="togglePlay()">▶ Play</button>
-    <button class="timeline-btn" onclick="exportSpritesheet()">Export Spritesheet</button>
-    <button class="timeline-btn" onclick="saveFLA()">Save Project</button>
-    <button class="timeline-btn" onclick="loadFLA()">Open Project</button>
+    <button class="timeline-btn" onclick="addLayer()" title="New Layer">+ Layer</button>
+    <button class="timeline-btn" onclick="deleteLayer()" title="Delete Layer">− Layer</button>
+    <button class="timeline-btn" onclick="insertKeyframe()" title="Insert Keyframe (F6)">F6 Keyframe</button>
+    <button class="timeline-btn" onclick="insertBlankKeyframe()" title="Insert Blank Keyframe (F7)">F7 Blank</button>
+    <button class="timeline-btn" onclick="clearKeyframe()" title="Clear Keyframe">Clear Frame</button>
+    <div style="flex:1"></div>
+    <button class="timeline-btn" onclick="previousFrame()" title="Previous Frame (,)">◀</button>
+    <button class="timeline-btn" onclick="togglePlay()" id="play-btn" title="Play (Enter)">▶ Play</button>
+    <button class="timeline-btn" onclick="nextFrame()" title="Next Frame (.)">▶</button>
+    <div style="flex:1"></div>
+    <button class="timeline-btn" onclick="exportSpritesheet()" title="Export Spritesheet">Export PNG</button>
+    <button class="timeline-btn" onclick="saveFLA()" title="Save Project">Save</button>
+    <button class="timeline-btn" onclick="loadFLA()" title="Open Project">Open</button>
   </div>
   
   <div id="timeline-main">
@@ -654,7 +777,7 @@ input[type="color"] {
       <div class="layer-header">
         <div style="width:16px;">👁</div>
         <div style="width:16px;">🔒</div>
-        <div style="flex:1;">Name</div>
+        <div style="flex:1;">Layer Name</div>
       </div>
       <div id="layers-list"></div>
     </div>
@@ -671,56 +794,169 @@ input[type="color"] {
   </div>
 </div>
 
+<!-- STATUS BAR -->
+<div id="status-bar">
+  <div class="status-item">
+    <span>🖌</span>
+    <span id="current-tool">Brush Tool</span>
+  </div>
+  <div class="status-item">
+    <span>📍</span>
+    <span id="mouse-position">X: 0, Y: 0</span>
+  </div>
+  <div class="status-item">
+    <span>🎬</span>
+    <span id="layer-info">Layer 1</span>
+  </div>
+</div>
+
 <script>
-/* ===== CORE ===== */
+/* ===== CORE STATE ===== */
 const canvas = document.getElementById("stage");
 const ctx = canvas.getContext("2d", { willReadFrequently: true });
 
 let tool = "brush";
 let drawing = false;
-let onion = true;
+let onionSkin = true;
+let showGrid = false;
 let playing = false;
 let fps = 12;
 
-const TOTAL_FRAMES = 48;
+const TOTAL_FRAMES = 60;
 
 /* ===== VIEW (ZOOM/PAN) ===== */
 let view = { x: 0, y: 0, zoom: 1 };
 let panning = false;
+let isPanMode = false;
 let lastPan = { x: 0, y: 0 };
+let startPos = { x: 0, y: 0 };
+
+/* ===== DRAWING BUFFER ===== */
+let drawingCanvas = document.createElement('canvas');
+let drawingCtx = drawingCanvas.getContext('2d');
+drawingCanvas.width = canvas.width;
+drawingCanvas.height = canvas.height;
 
 /* ===== PROJECT ===== */
 const project = {
   currentFrame: 0,
   currentLayer: 0,
-  layers: []
+  layers: [],
+  history: [],
+  historyIndex: -1
 };
 
-/* ===== INIT ===== */
-addLayer();
-buildTimeline();
-selectFrame(0);
-updateZoomDisplay();
+/* ===== TOOL NAMES ===== */
+const toolNames = {
+  select: 'Selection Tool',
+  subselect: 'Subselection Tool',
+  brush: 'Brush Tool',
+  pencil: 'Pencil Tool',
+  eraser: 'Eraser Tool',
+  rectangle: 'Rectangle Tool',
+  oval: 'Oval Tool',
+  line: 'Line Tool',
+  text: 'Text Tool',
+  hand: 'Hand Tool',
+  zoom: 'Zoom Tool'
+};
+
+/* ===== INITIALIZATION ===== */
+function init() {
+  addLayer();
+  buildTimeline();
+  selectFrame(0);
+  updateZoomDisplay();
+  updateToolDisplay();
+  insertKeyframe();
+  
+  // Set canvas cursor
+  updateCursor();
+  
+  showNotification('Welcome to Adobe Animate CC 2024');
+}
+
+/* ===== NOTIFICATIONS ===== */
+function showNotification(message, duration = 2000) {
+  const notification = document.createElement('div');
+  notification.className = 'notification';
+  notification.textContent = message;
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.style.animation = 'slideIn 0.3s ease-out reverse';
+    setTimeout(() => notification.remove(), 300);
+  }, duration);
+}
 
 /* ===== TOOL SELECTION ===== */
-function setTool(t) {
-  tool = t;
-  document.querySelectorAll('.tool-icon').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.tool-btn').forEach(el => el.classList.remove('active'));
-  event.currentTarget.classList.add('active');
+function setTool(newTool) {
+  tool = newTool;
+  
+  // Update toolbar
+  document.querySelectorAll('.tool-icon').forEach(el => {
+    el.classList.toggle('active', el.dataset.tool === tool);
+  });
+  
+  document.querySelectorAll('.tool-btn').forEach(el => {
+    el.classList.remove('active');
+  });
+  
+  const toolBtn = document.getElementById(tool + '-tool');
+  if (toolBtn) toolBtn.classList.add('active');
+  
+  // Update status bar
+  document.getElementById('current-tool').textContent = toolNames[tool] || tool;
+  
+  // Update cursor
+  updateCursor();
+  
+  // Update pan mode
+  isPanMode = (tool === 'hand');
+}
+
+function updateCursor() {
+  if (tool === 'hand' || isPanMode) {
+    canvas.style.cursor = 'grab';
+  } else if (tool === 'brush' || tool === 'pencil' || tool === 'eraser') {
+    canvas.style.cursor = 'crosshair';
+  } else {
+    canvas.style.cursor = 'default';
+  }
 }
 
 /* ===== LAYERS ===== */
 function addLayer() {
+  const layerNum = project.layers.length + 1;
   project.layers.unshift({
-    name: "Layer " + (project.layers.length + 1),
+    name: "Layer " + layerNum,
     visible: true,
     locked: false,
-    frames: Array(TOTAL_FRAMES).fill(null).map(() => ({ hasContent: false, data: null }))
+    frames: Array(TOTAL_FRAMES).fill(null).map(() => ({ 
+      hasContent: false, 
+      data: null,
+      isBlank: false
+    }))
   });
   project.currentLayer = 0;
   redrawLayers();
   buildTimeline();
+  showNotification('Layer added: Layer ' + layerNum);
+}
+
+function deleteLayer() {
+  if (project.layers.length <= 1) {
+    showNotification('Cannot delete the last layer');
+    return;
+  }
+  
+  const layerName = project.layers[project.currentLayer].name;
+  project.layers.splice(project.currentLayer, 1);
+  project.currentLayer = Math.max(0, project.currentLayer - 1);
+  redrawLayers();
+  buildTimeline();
+  redraw();
+  showNotification('Layer deleted: ' + layerName);
 }
 
 function redrawLayers() {
@@ -737,6 +973,7 @@ function redrawLayers() {
     const eyeBtn = document.createElement("button");
     eyeBtn.className = "layer-ctrl-btn" + (layer.visible ? " active" : "");
     eyeBtn.textContent = layer.visible ? "👁" : "⚫";
+    eyeBtn.title = layer.visible ? "Hide Layer" : "Show Layer";
     eyeBtn.onclick = (e) => {
       e.stopPropagation();
       layer.visible = !layer.visible;
@@ -747,6 +984,7 @@ function redrawLayers() {
     const lockBtn = document.createElement("button");
     lockBtn.className = "layer-ctrl-btn" + (layer.locked ? " active" : "");
     lockBtn.textContent = layer.locked ? "🔒" : "🔓";
+    lockBtn.title = layer.locked ? "Unlock Layer" : "Lock Layer";
     lockBtn.onclick = (e) => {
       e.stopPropagation();
       layer.locked = !layer.locked;
@@ -759,10 +997,12 @@ function redrawLayers() {
     const name = document.createElement("div");
     name.className = "layer-name";
     name.textContent = layer.name;
-    name.ondblclick = () => {
-      const newName = prompt("Layer name:", layer.name);
-      if (newName) {
-        layer.name = newName;
+    name.title = "Double-click to rename";
+    name.ondblclick = (e) => {
+      e.stopPropagation();
+      const newName = prompt("Enter new layer name:", layer.name);
+      if (newName && newName.trim()) {
+        layer.name = newName.trim();
         redrawLayers();
       }
     };
@@ -774,10 +1014,18 @@ function redrawLayers() {
       redrawLayers();
       buildTimeline();
       redraw();
+      updateLayerInfo();
     };
     
     el.appendChild(row);
   });
+  
+  updateLayerInfo();
+}
+
+function updateLayerInfo() {
+  const layer = project.layers[project.currentLayer];
+  document.getElementById('layer-info').textContent = layer.name;
 }
 
 /* ===== TIMELINE ===== */
@@ -793,6 +1041,7 @@ function buildTimeline() {
       fn.classList.add("multiple-5");
       fn.textContent = i + 1;
     }
+    fn.onclick = () => selectFrame(i);
     header.appendChild(fn);
   }
   
@@ -804,30 +1053,46 @@ function buildTimeline() {
     const layerFrames = document.createElement("div");
     layerFrames.className = "layer-frames";
     
+    let lastKeyframe = -1;
+    
     for (let i = 0; i < TOTAL_FRAMES; i++) {
       const cell = document.createElement("div");
       cell.className = "frame-cell";
+      cell.dataset.frame = i;
+      cell.dataset.layer = layerIdx;
       
-      if (layer.frames[i].hasContent) {
+      const frame = layer.frames[i];
+      
+      if (frame.hasContent) {
         cell.classList.add("keyframe");
-        
-        // Check if next frames should be spans
-        let j = i + 1;
-        while (j < TOTAL_FRAMES && !layer.frames[j].hasContent && j < TOTAL_FRAMES) {
-          const spanCell = layerFrames.children[j];
-          if (spanCell) spanCell.classList.add("span");
-          j++;
-        }
+        lastKeyframe = i;
+      } else if (lastKeyframe >= 0 && i > lastKeyframe) {
+        cell.classList.add("span");
       }
       
       if (i === project.currentFrame && layerIdx === project.currentLayer) {
         cell.classList.add("current");
       }
       
-      cell.onclick = () => selectFrame(i);
+      cell.onclick = () => {
+        selectFrame(i);
+        project.currentLayer = layerIdx;
+        redrawLayers();
+      };
+      
       cell.ondblclick = () => {
         selectFrame(i);
+        project.currentLayer = layerIdx;
+        redrawLayers();
         insertKeyframe();
+      };
+      
+      // Right click context menu
+      cell.oncontextmenu = (e) => {
+        e.preventDefault();
+        selectFrame(i);
+        project.currentLayer = layerIdx;
+        redrawLayers();
       };
       
       layerFrames.appendChild(cell);
@@ -840,11 +1105,21 @@ function buildTimeline() {
 }
 
 function selectFrame(i) {
+  if (i < 0 || i >= TOTAL_FRAMES) return;
+  
   project.currentFrame = i;
-  document.getElementById("frame-display").textContent = i + 1;
+  document.getElementById("frame-display").textContent = (i + 1);
   buildTimeline();
   updatePlayhead();
   redraw();
+}
+
+function nextFrame() {
+  selectFrame((project.currentFrame + 1) % TOTAL_FRAMES);
+}
+
+function previousFrame() {
+  selectFrame((project.currentFrame - 1 + TOTAL_FRAMES) % TOTAL_FRAMES);
 }
 
 function updatePlayhead() {
@@ -854,31 +1129,50 @@ function updatePlayhead() {
 
 function insertKeyframe() {
   const layer = project.layers[project.currentLayer];
-  if (!layer.frames[project.currentFrame].hasContent) {
-    layer.frames[project.currentFrame].hasContent = true;
+  const frame = layer.frames[project.currentFrame];
+  
+  if (!frame.hasContent) {
+    frame.hasContent = true;
+    frame.isBlank = false;
+    
     // Copy previous keyframe if exists
     for (let i = project.currentFrame - 1; i >= 0; i--) {
       if (layer.frames[i].data) {
-        layer.frames[project.currentFrame].data = 
-          ctx.createImageData(layer.frames[i].data.width, layer.frames[i].data.height);
-        layer.frames[project.currentFrame].data.data.set(layer.frames[i].data.data);
+        frame.data = ctx.createImageData(canvas.width, canvas.height);
+        frame.data.data.set(layer.frames[i].data.data);
         break;
       }
     }
+    
     buildTimeline();
     redraw();
+    showNotification('Keyframe inserted at frame ' + (project.currentFrame + 1));
   }
+}
+
+function insertBlankKeyframe() {
+  const layer = project.layers[project.currentLayer];
+  const frame = layer.frames[project.currentFrame];
+  
+  frame.hasContent = true;
+  frame.isBlank = true;
+  frame.data = null;
+  
+  buildTimeline();
+  redraw();
+  showNotification('Blank keyframe inserted at frame ' + (project.currentFrame + 1));
 }
 
 function clearKeyframe() {
   const layer = project.layers[project.currentLayer];
-  layer.frames[project.currentFrame] = { hasContent: false, data: null };
+  layer.frames[project.currentFrame] = { hasContent: false, data: null, isBlank: false };
   buildTimeline();
   redraw();
+  showNotification('Keyframe cleared');
 }
 
-/* ===== DRAW (MOUSE + TOUCH) ===== */
-function getPos(evt) {
+/* ===== DRAWING ===== */
+function getCanvasPos(evt) {
   const r = canvas.getBoundingClientRect();
   const e = evt.touches ? evt.touches[0] : evt;
   return {
@@ -888,24 +1182,47 @@ function getPos(evt) {
 }
 
 function startDraw(e) {
-  if (panning || tool === 'hand') {
+  const layer = project.layers[project.currentLayer];
+  
+  // Check if we should pan
+  if (tool === 'hand' || isPanMode || e.button === 1) { // Middle mouse button
     panning = true;
     lastPan = { x: e.clientX, y: e.clientY };
+    canvas.classList.add('grabbing');
+    canvas.classList.remove('grab');
     return;
   }
   
-  const layer = project.layers[project.currentLayer];
-  if (layer.locked) return;
+  if (layer.locked) {
+    showNotification('Layer is locked');
+    return;
+  }
+  
+  const frame = layer.frames[project.currentFrame];
+  if (!frame.hasContent) {
+    showNotification('Insert a keyframe first (F6)');
+    return;
+  }
   
   if (tool === 'brush' || tool === 'pencil' || tool === 'eraser') {
     drawing = true;
-    const p = getPos(e);
-    ctx.beginPath();
-    ctx.moveTo(p.x, p.y);
+    const p = getCanvasPos(e);
+    startPos = p;
+    
+    // Clear drawing buffer
+    drawingCtx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+    
+    drawingCtx.beginPath();
+    drawingCtx.moveTo(p.x, p.y);
   }
+  
+  // Update mouse position
+  updateMousePosition(e);
 }
 
 function moveDraw(e) {
+  updateMousePosition(e);
+  
   if (panning) {
     view.x += e.clientX - lastPan.x;
     view.y += e.clientY - lastPan.y;
@@ -917,35 +1234,71 @@ function moveDraw(e) {
   if (!drawing) return;
   e.preventDefault();
   
-  const p = getPos(e);
-  ctx.strokeStyle = document.getElementById("color").value;
-  ctx.lineWidth = document.getElementById("size").value;
-  ctx.lineCap = "round";
-  ctx.lineJoin = "round";
-  ctx.globalCompositeOperation = 
-    tool === "eraser" ? "destination-out" : "source-over";
-  ctx.lineTo(p.x, p.y);
-  ctx.stroke();
+  const p = getCanvasPos(e);
+  
+  drawingCtx.strokeStyle = document.getElementById("color").value;
+  drawingCtx.lineWidth = document.getElementById("size").value;
+  drawingCtx.lineCap = "round";
+  drawingCtx.lineJoin = "round";
+  
+  if (tool === "eraser") {
+    drawingCtx.globalCompositeOperation = "destination-out";
+  } else {
+    drawingCtx.globalCompositeOperation = "source-over";
+  }
+  
+  drawingCtx.lineTo(p.x, p.y);
+  drawingCtx.stroke();
+  
+  // Redraw with current stroke
+  redraw();
 }
 
 function endDraw() {
   if (panning) {
     panning = false;
+    canvas.classList.remove('grabbing');
+    if (tool === 'hand') {
+      canvas.classList.add('grab');
+    }
     return;
   }
   
   if (!drawing) return;
   drawing = false;
-  ctx.beginPath();
   
+  drawingCtx.beginPath();
+  
+  // Merge drawing buffer into main canvas
   const layer = project.layers[project.currentLayer];
-  const currentFrameData = layer.frames[project.currentFrame];
-  currentFrameData.hasContent = true;
-  currentFrameData.data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const frame = layer.frames[project.currentFrame];
   
-  buildTimeline();
+  // Get current frame data or create new
+  if (frame.data) {
+    ctx.putImageData(frame.data, 0, 0);
+  } else {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  
+  // Draw the new stroke
+  ctx.drawImage(drawingCanvas, 0, 0);
+  
+  // Save the result
+  frame.data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  
+  // Clear drawing buffer
+  drawingCtx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+  
+  redraw();
 }
 
+function updateMousePosition(e) {
+  const p = getCanvasPos(e);
+  document.getElementById('mouse-position').textContent = 
+    `X: ${Math.round(p.x)}, Y: ${Math.round(p.y)}`;
+}
+
+/* ===== EVENT LISTENERS ===== */
 canvas.addEventListener("mousedown", startDraw);
 canvas.addEventListener("mousemove", moveDraw);
 canvas.addEventListener("mouseup", endDraw);
@@ -957,20 +1310,41 @@ canvas.addEventListener("touchend", endDraw);
 /* ===== ZOOM ===== */
 canvas.addEventListener("wheel", e => {
   e.preventDefault();
+  
+  const rect = canvas.getBoundingClientRect();
+  const mouseX = e.clientX - rect.left;
+  const mouseY = e.clientY - rect.top;
+  
+  const worldX = (mouseX - view.x) / view.zoom;
+  const worldY = (mouseY - view.y) / view.zoom;
+  
   const delta = e.deltaY * -0.001;
-  view.zoom = Math.min(Math.max(0.1, view.zoom + delta), 8);
+  const oldZoom = view.zoom;
+  view.zoom = Math.min(Math.max(0.1, view.zoom + delta), 10);
+  
+  view.x = mouseX - worldX * view.zoom;
+  view.y = mouseY - worldY * view.zoom;
+  
   updateZoomDisplay();
   redraw();
 }, { passive: false });
 
 function zoomIn() {
-  view.zoom = Math.min(view.zoom + 0.1, 8);
+  view.zoom = Math.min(view.zoom * 1.2, 10);
   updateZoomDisplay();
   redraw();
 }
 
 function zoomOut() {
-  view.zoom = Math.max(view.zoom - 0.1, 0.1);
+  view.zoom = Math.max(view.zoom / 1.2, 0.1);
+  updateZoomDisplay();
+  redraw();
+}
+
+function resetZoom() {
+  view.zoom = 1;
+  view.x = 0;
+  view.y = 0;
   updateZoomDisplay();
   redraw();
 }
@@ -982,9 +1356,9 @@ function updateZoomDisplay() {
 
 /* ===== PAN WITH SPACEBAR ===== */
 window.addEventListener("keydown", e => {
-  if (e.code === "Space" && !e.repeat) {
+  if (e.code === "Space" && !e.repeat && document.activeElement.tagName !== 'INPUT') {
     e.preventDefault();
-    panning = true;
+    isPanMode = true;
     canvas.style.cursor = "grab";
   }
 });
@@ -992,53 +1366,105 @@ window.addEventListener("keydown", e => {
 window.addEventListener("keyup", e => {
   if (e.code === "Space") {
     e.preventDefault();
-    panning = false;
-    canvas.style.cursor = "default";
+    isPanMode = false;
+    updateCursor();
   }
 });
 
 /* ===== RENDER ===== */
 function redraw() {
+  // Clear and reset transform
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  // Apply zoom and pan
   ctx.setTransform(view.zoom, 0, 0, view.zoom, view.x, view.y);
-
+  
+  // Draw grid if enabled
+  if (showGrid) {
+    drawGrid();
+  }
+  
+  // Draw layers (bottom to top)
   project.layers.slice().reverse().forEach((layer, idx) => {
     if (!layer.visible) return;
     
     const reverseIdx = project.layers.length - 1 - idx;
-    const frame = layer.frames[project.currentFrame];
     
-    // Onion skin for current layer
-    if (onion && reverseIdx === project.currentLayer && project.currentFrame > 0) {
-      const prev = layer.frames[project.currentFrame - 1];
-      if (prev && prev.data) {
+    // Find the active keyframe for current frame
+    let activeFrame = null;
+    for (let i = project.currentFrame; i >= 0; i--) {
+      if (layer.frames[i].hasContent) {
+        activeFrame = layer.frames[i];
+        break;
+      }
+    }
+    
+    // Onion skin for current layer (previous frame)
+    if (onionSkin && reverseIdx === project.currentLayer && project.currentFrame > 0) {
+      let prevFrame = null;
+      for (let i = project.currentFrame - 1; i >= 0; i--) {
+        if (layer.frames[i].hasContent && layer.frames[i].data) {
+          prevFrame = layer.frames[i];
+          break;
+        }
+      }
+      
+      if (prevFrame && prevFrame.data) {
         ctx.globalAlpha = 0.3;
-        ctx.putImageData(prev.data, 0, 0);
+        ctx.putImageData(prevFrame.data, 0, 0);
         ctx.globalAlpha = 1;
       }
     }
     
     // Current frame
-    if (frame && frame.data) {
-      ctx.putImageData(frame.data, 0, 0);
+    if (activeFrame && activeFrame.data) {
+      ctx.putImageData(activeFrame.data, 0, 0);
     }
   });
+  
+  // Draw current stroke from drawing buffer
+  if (drawing) {
+    ctx.drawImage(drawingCanvas, 0, 0);
+  }
 }
 
-/* ===== PLAY ===== */
+function drawGrid() {
+  const gridSize = 20;
+  ctx.strokeStyle = '#e0e0e0';
+  ctx.lineWidth = 0.5 / view.zoom;
+  
+  ctx.beginPath();
+  for (let x = 0; x <= canvas.width; x += gridSize) {
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, canvas.height);
+  }
+  for (let y = 0; y <= canvas.height; y += gridSize) {
+    ctx.moveTo(0, y);
+    ctx.lineTo(canvas.width, y);
+  }
+  ctx.stroke();
+}
+
+/* ===== PLAYBACK ===== */
 let playInterval = null;
 
 function togglePlay() {
   playing = !playing;
   
+  const playBtn = document.getElementById('play-btn');
+  
   if (playing) {
+    playBtn.textContent = '⏸ Pause';
     playInterval = setInterval(() => {
       project.currentFrame = (project.currentFrame + 1) % TOTAL_FRAMES;
       selectFrame(project.currentFrame);
     }, 1000 / fps);
+    showNotification('Playing animation');
   } else {
+    playBtn.textContent = '▶ Play';
     clearInterval(playInterval);
+    showNotification('Playback stopped');
   }
 }
 
@@ -1051,115 +1477,248 @@ function updateFPS() {
       selectFrame(project.currentFrame);
     }, 1000 / fps);
   }
+  showNotification('FPS set to ' + fps);
 }
 
+/* ===== PROPERTIES ===== */
 function updateStrokeSize() {
-  document.getElementById("stroke-size-display").textContent = 
-    document.getElementById("size").value;
+  const size = document.getElementById("size").value;
+  document.getElementById("stroke-size-display").textContent = size + " px";
+}
+
+function updateSmoothing() {
+  const smoothing = document.getElementById("smoothing").value;
+  document.getElementById("smoothing-display").textContent = smoothing + "%";
+}
+
+function toggleOnionSkin() {
+  onionSkin = document.getElementById("onion-toggle").checked;
+  redraw();
+  showNotification('Onion skin ' + (onionSkin ? 'enabled' : 'disabled'));
+}
+
+function toggleGrid() {
+  showGrid = document.getElementById("grid-toggle").checked;
+  redraw();
+  showNotification('Grid ' + (showGrid ? 'enabled' : 'disabled'));
+}
+
+function updateToolDisplay() {
+  // Update UI based on current tool
 }
 
 /* ===== EXPORT ===== */
 function exportSpritesheet() {
   const c = document.createElement("canvas");
-  c.width = canvas.width * TOTAL_FRAMES;
-  c.height = canvas.height;
+  const cols = Math.ceil(Math.sqrt(TOTAL_FRAMES));
+  const rows = Math.ceil(TOTAL_FRAMES / cols);
+  
+  c.width = canvas.width * cols;
+  c.height = canvas.height * rows;
   const cx = c.getContext("2d");
   
+  // Fill with transparent background
+  cx.clearRect(0, 0, c.width, c.height);
+  
   const oldFrame = project.currentFrame;
+  const oldZoom = view.zoom;
+  const oldX = view.x;
+  const oldY = view.y;
+  
+  view.zoom = 1;
+  view.x = 0;
+  view.y = 0;
   
   for (let i = 0; i < TOTAL_FRAMES; i++) {
     project.currentFrame = i;
+    
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
+    // Draw all visible layers for this frame
     project.layers.slice().reverse().forEach(layer => {
       if (!layer.visible) return;
-      const frame = layer.frames[i];
-      if (frame && frame.data) {
-        ctx.putImageData(frame.data, 0, 0);
+      
+      let activeFrame = null;
+      for (let j = i; j >= 0; j--) {
+        if (layer.frames[j].hasContent) {
+          activeFrame = layer.frames[j];
+          break;
+        }
+      }
+      
+      if (activeFrame && activeFrame.data) {
+        ctx.putImageData(activeFrame.data, 0, 0);
       }
     });
     
-    cx.drawImage(canvas, i * canvas.width, 0);
+    cx.drawImage(canvas, col * canvas.width, row * canvas.height);
   }
   
   project.currentFrame = oldFrame;
+  view.zoom = oldZoom;
+  view.x = oldX;
+  view.y = oldY;
   redraw();
   
   const a = document.createElement("a");
   a.href = c.toDataURL("image/png");
-  a.download = "spritesheet.png";
+  a.download = "spritesheet_" + cols + "x" + rows + ".png";
   a.click();
+  
+  showNotification('Spritesheet exported: ' + cols + 'x' + rows + ' grid');
 }
 
 /* ===== SAVE / LOAD ===== */
 function saveFLA() {
   const saveData = {
+    version: "1.0",
     ...project,
-    fps: fps
+    fps: fps,
+    timestamp: new Date().toISOString()
   };
   
   const blob = new Blob([JSON.stringify(saveData)], 
     { type: "application/json" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "project.fla";
+  a.download = "animation_" + Date.now() + ".fla";
   a.click();
+  
+  showNotification('Project saved successfully');
 }
 
 function loadFLA() {
   const input = document.createElement("input");
   input.type = "file";
-  input.accept = ".fla";
+  input.accept = ".fla,.json";
   input.onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
     const reader = new FileReader();
     reader.onload = () => {
-      const data = JSON.parse(reader.result);
-      Object.assign(project, data);
-      
-      // Restore ImageData objects
-      project.layers.forEach(layer => {
-        layer.frames.forEach(frame => {
-          if (frame.data && frame.data.data) {
-            const imageData = ctx.createImageData(frame.data.width, frame.data.height);
-            imageData.data.set(frame.data.data);
-            frame.data = imageData;
-          }
+      try {
+        const data = JSON.parse(reader.result);
+        
+        // Validate data
+        if (!data.layers || !Array.isArray(data.layers)) {
+          throw new Error("Invalid project file");
+        }
+        
+        // Clear current project
+        project.layers = [];
+        project.currentFrame = 0;
+        project.currentLayer = 0;
+        
+        // Load data
+        Object.assign(project, data);
+        
+        // Restore ImageData objects
+        project.layers.forEach(layer => {
+          layer.frames.forEach(frame => {
+            if (frame.data && frame.data.data) {
+              const imageData = ctx.createImageData(frame.data.width, frame.data.height);
+              if (frame.data.data.length) {
+                imageData.data.set(frame.data.data);
+              }
+              frame.data = imageData;
+            }
+          });
         });
-      });
-      
-      if (data.fps) {
-        fps = data.fps;
-        document.getElementById("fps-input").value = fps;
+        
+        if (data.fps) {
+          fps = data.fps;
+          document.getElementById("fps-input").value = fps;
+        }
+        
+        redrawLayers();
+        buildTimeline();
+        selectFrame(project.currentFrame);
+        
+        showNotification('Project loaded: ' + file.name);
+      } catch (err) {
+        showNotification('Error loading project: ' + err.message);
+        console.error(err);
       }
-      
-      redrawLayers();
-      buildTimeline();
-      selectFrame(project.currentFrame);
     };
-    reader.readAsText(e.target.files[0]);
+    reader.readAsText(file);
   };
   input.click();
 }
 
 /* ===== KEYBOARD SHORTCUTS ===== */
 window.addEventListener("keydown", e => {
-  if (e.target.tagName === 'INPUT') return;
+  // Ignore if typing in input
+  if (document.activeElement.tagName === 'INPUT') return;
   
-  switch(e.key.toLowerCase()) {
-    case 'b': setTool('brush'); break;
-    case 'y': setTool('pencil'); break;
-    case 'e': setTool('eraser'); break;
-    case 'h': setTool('hand'); break;
-    case 'z': setTool('zoom'); break;
-    case 'v': setTool('select'); break;
+  // Tool shortcuts
+  if (!e.ctrlKey && !e.metaKey) {
+    switch(e.key.toLowerCase()) {
+      case 'v': setTool('select'); e.preventDefault(); break;
+      case 'b': setTool('brush'); e.preventDefault(); break;
+      case 'y': setTool('pencil'); e.preventDefault(); break;
+      case 'e': setTool('eraser'); e.preventDefault(); break;
+      case 'h': setTool('hand'); e.preventDefault(); break;
+      case 'z': if (!e.ctrlKey) setTool('zoom'); e.preventDefault(); break;
+      case 'r': setTool('rectangle'); e.preventDefault(); break;
+      case 'o': setTool('oval'); e.preventDefault(); break;
+      case 'n': setTool('line'); e.preventDefault(); break;
+      case 't': setTool('text'); e.preventDefault(); break;
+    }
   }
   
-  if (e.key === 'F6') {
+  // Frame navigation
+  if (e.key === ',') {
+    previousFrame();
     e.preventDefault();
+  } else if (e.key === '.') {
+    nextFrame();
+    e.preventDefault();
+  }
+  
+  // Playback
+  if (e.key === 'Enter') {
+    togglePlay();
+    e.preventDefault();
+  }
+  
+  // Keyframe shortcuts
+  if (e.key === 'F6') {
     insertKeyframe();
+    e.preventDefault();
+  } else if (e.key === 'F7') {
+    insertBlankKeyframe();
+    e.preventDefault();
+  }
+  
+  // Zoom shortcuts
+  if ((e.ctrlKey || e.metaKey) && e.key === '0') {
+    resetZoom();
+    e.preventDefault();
+  } else if ((e.ctrlKey || e.metaKey) && e.key === '+') {
+    zoomIn();
+    e.preventDefault();
+  } else if ((e.ctrlKey || e.metaKey) && e.key === '-') {
+    zoomOut();
+    e.preventDefault();
+  }
+  
+  // Save/Load
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+    saveFLA();
+    e.preventDefault();
+  } else if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
+    loadFLA();
+    e.preventDefault();
   }
 });
+
+/* ===== INITIALIZE ===== */
+init();
 
 </script>
 
