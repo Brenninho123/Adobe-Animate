@@ -17,15 +17,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
-      - name: Clean npm cache
+      - name: Clean npm
         run: |
           npm cache clean --force
           rm -rf node_modules
 
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm install --no-audit --no-fund --legacy-peer-deps
 
       - name: Setup Java
         uses: actions/setup-java@v4
