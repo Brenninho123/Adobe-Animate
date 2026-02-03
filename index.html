@@ -2,322 +2,1165 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Adobe Animate</title>
+<title>Adobe Animate CC 2024</title>
 
 <style>
-body{
-  margin:0;
-  background:#1e1e1e;
-  color:#e0e0e0;
-  font-family:Segoe UI,sans-serif;
-  display:flex;
-  height:100vh;
-  overflow:hidden;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
-#tools,#layers{
-  background:#2d2d2d;
-  padding:6px;
-  border-right:1px solid #111;
+
+body {
+  margin: 0;
+  background: #1e1e1e;
+  color: #d4d4d4;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
 }
-#tools{width:120px}
-#layers{width:180px}
-button,input{
-  width:100%;
-  margin-bottom:6px;
+
+/* ===== MENU BAR ===== */
+#menubar {
+  height: 32px;
+  background: #2d2d30;
+  border-bottom: 1px solid #1e1e1e;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  gap: 15px;
 }
-.layer{
-  background:#3a3a3a;
-  padding:4px;
-  margin-bottom:4px;
-  cursor:pointer;
+
+.menu-item {
+  color: #d4d4d4;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 3px;
+  transition: background 0.2s;
 }
-.layer.active{background:#007acc}
-#main{
-  flex:1;
-  display:flex;
-  flex-direction:column;
+
+.menu-item:hover {
+  background: #3e3e42;
 }
-#topbar{
-  height:28px;
-  background:#252526;
-  display:flex;
-  align-items:center;
-  padding-left:10px;
-  border-bottom:1px solid #111;
-  font-weight:bold;
+
+/* ===== TOOLBAR ===== */
+#toolbar {
+  height: 50px;
+  background: #2d2d30;
+  border-bottom: 1px solid #1e1e1e;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  gap: 5px;
 }
-canvas{
-  background:white;
-  touch-action:none;
+
+.tool-group {
+  display: flex;
+  gap: 2px;
+  padding: 0 5px;
+  border-right: 1px solid #3e3e42;
 }
-#timeline{
-  height:110px;
-  background:#252526;
-  display:flex;
-  align-items:center;
-  overflow-x:auto;
+
+.tool-btn {
+  width: 32px;
+  height: 32px;
+  background: #3e3e42;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  color: #d4d4d4;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all 0.2s;
 }
-.frame{
-  width:26px;
-  height:26px;
-  margin:4px;
-  background:#3a3a3a;
-  font-size:11px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
+
+.tool-btn:hover {
+  background: #505053;
 }
-.frame.active{background:#007acc}
+
+.tool-btn.active {
+  background: #007acc;
+  border-color: #007acc;
+}
+
+/* ===== MAIN CONTENT ===== */
+#content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* ===== LEFT PANEL (TOOLS) ===== */
+#tools-panel {
+  width: 52px;
+  background: #252526;
+  border-right: 1px solid #1e1e1e;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 4px;
+  gap: 4px;
+}
+
+.tool-icon {
+  width: 44px;
+  height: 44px;
+  background: #3e3e42;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 20px;
+  transition: all 0.2s;
+}
+
+.tool-icon:hover {
+  background: #505053;
+  border-color: #505053;
+}
+
+.tool-icon.active {
+  background: #1e1e1e;
+  border-color: #007acc;
+}
+
+.tool-separator {
+  height: 1px;
+  background: #3e3e42;
+  margin: 4px 0;
+}
+
+/* ===== STAGE AREA ===== */
+#stage-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #1e1e1e;
+  position: relative;
+}
+
+#stage-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #2d2d30;
+  position: relative;
+}
+
+#stage {
+  background: white;
+  box-shadow: 0 0 0 1px #000, 0 4px 20px rgba(0,0,0,0.5);
+  touch-action: none;
+}
+
+/* ===== RIGHT PANEL (PROPERTIES + LIBRARY) ===== */
+#right-panel {
+  width: 280px;
+  background: #252526;
+  border-left: 1px solid #1e1e1e;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-header {
+  height: 28px;
+  background: #2d2d30;
+  border-bottom: 1px solid #1e1e1e;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#properties {
+  height: 250px;
+  padding: 10px;
+  border-bottom: 1px solid #1e1e1e;
+  overflow-y: auto;
+}
+
+.property-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.property-label {
+  width: 80px;
+  font-size: 11px;
+  color: #999;
+}
+
+.property-input {
+  flex: 1;
+  background: #3e3e42;
+  border: 1px solid #3e3e42;
+  color: #d4d4d4;
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+}
+
+.property-input:focus {
+  outline: none;
+  border-color: #007acc;
+}
+
+#library {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+/* ===== BOTTOM PANEL (TIMELINE) ===== */
+#bottom-panel {
+  height: 220px;
+  background: #252526;
+  border-top: 1px solid #1e1e1e;
+  display: flex;
+  flex-direction: column;
+}
+
+#timeline-header {
+  height: 28px;
+  background: #2d2d30;
+  border-bottom: 1px solid #1e1e1e;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  gap: 10px;
+}
+
+.timeline-btn {
+  background: #3e3e42;
+  border: none;
+  color: #d4d4d4;
+  padding: 4px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 11px;
+  transition: background 0.2s;
+}
+
+.timeline-btn:hover {
+  background: #505053;
+}
+
+#timeline-main {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+#layers-panel {
+  width: 200px;
+  background: #2d2d30;
+  border-right: 1px solid #1e1e1e;
+  overflow-y: auto;
+}
+
+.layer-header {
+  height: 30px;
+  background: #252526;
+  border-bottom: 1px solid #1e1e1e;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.layer-row {
+  height: 24px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #1e1e1e;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.layer-row:hover {
+  background: #3e3e42;
+}
+
+.layer-row.active {
+  background: #094771;
+}
+
+.layer-controls {
+  display: flex;
+  gap: 4px;
+  padding: 0 8px;
+}
+
+.layer-ctrl-btn {
+  width: 16px;
+  height: 16px;
+  background: transparent;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.layer-ctrl-btn:hover {
+  color: #d4d4d4;
+}
+
+.layer-ctrl-btn.active {
+  color: #007acc;
+}
+
+.layer-name {
+  flex: 1;
+  padding: 0 8px;
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#frames-panel {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+.frames-header {
+  height: 30px;
+  background: #252526;
+  border-bottom: 1px solid #1e1e1e;
+  display: flex;
+}
+
+.frame-number {
+  width: 20px;
+  min-width: 20px;
+  height: 30px;
+  border-right: 1px solid #1e1e1e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  color: #999;
+  background: #252526;
+}
+
+.frame-number.multiple-5 {
+  background: #2d2d30;
+  font-weight: 600;
+  color: #d4d4d4;
+}
+
+.layer-frames {
+  height: 24px;
+  display: flex;
+  border-bottom: 1px solid #1e1e1e;
+}
+
+.frame-cell {
+  width: 20px;
+  min-width: 20px;
+  height: 24px;
+  border-right: 1px solid #1e1e1e;
+  background: #2d2d30;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.1s;
+}
+
+.frame-cell:hover {
+  background: #3e3e42;
+}
+
+.frame-cell.keyframe {
+  background: #e0e0e0;
+}
+
+.frame-cell.keyframe::after {
+  content: '●';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: #000;
+  font-size: 8px;
+}
+
+.frame-cell.current {
+  background: #ff0000;
+}
+
+.frame-cell.current::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #ff0000;
+}
+
+.frame-cell.span {
+  background: #b8b8b8;
+}
+
+/* ===== PLAYHEAD ===== */
+#playhead {
+  position: absolute;
+  top: 0;
+  width: 20px;
+  height: 100%;
+  pointer-events: none;
+}
+
+.playhead-top {
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid #ff0000;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.playhead-line {
+  width: 2px;
+  height: 100%;
+  background: #ff0000;
+  position: absolute;
+  top: 10px;
+  left: 9px;
+}
+
+/* ===== ZOOM CONTROL ===== */
+#zoom-control {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  gap: 5px;
+  background: #2d2d30;
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid #1e1e1e;
+}
+
+.zoom-btn {
+  width: 28px;
+  height: 28px;
+  background: #3e3e42;
+  border: none;
+  color: #d4d4d4;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.zoom-btn:hover {
+  background: #505053;
+}
+
+#zoom-display {
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  color: #d4d4d4;
+  font-size: 11px;
+  min-width: 50px;
+  justify-content: center;
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3e3e42;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #505053;
+}
+
+/* ===== COLOR PICKER ===== */
+input[type="color"] {
+  width: 100%;
+  height: 32px;
+  border: 1px solid #3e3e42;
+  background: #3e3e42;
+  border-radius: 3px;
+  cursor: pointer;
+}
 </style>
 </head>
 
 <body>
 
-<div id="tools">
-  <b>PENCILS</b>
-  <button onclick="tool='brush'">🖌 Brush</button>
-  <button onclick="tool='pencil'">✏ Pencil</button>
-  <button onclick="tool='eraser'">🧽 Eraser</button>
-  <input type="color" id="color" value="#000000">
-  <input type="range" id="size" min="1" max="30" value="4">
-  <hr>
-  <button onclick="togglePlay()">▶ Play</button>
-  <button onclick="onion=!onion">🧅 Onion</button>
-  <button onclick="exportSpritesheet()">🖼 Export</button>
-  <button onclick="saveFLA()">💾 Save .fla</button>
-  <button onclick="loadFLA()">📂 Open .fla</button>
+<!-- MENU BAR -->
+<div id="menubar">
+  <div class="menu-item">File</div>
+  <div class="menu-item">Edit</div>
+  <div class="menu-item">View</div>
+  <div class="menu-item">Insert</div>
+  <div class="menu-item">Modify</div>
+  <div class="menu-item">Text</div>
+  <div class="menu-item">Commands</div>
+  <div class="menu-item">Control</div>
+  <div class="menu-item">Window</div>
+  <div class="menu-item">Help</div>
 </div>
 
-<div id="layers">
-  <button onclick="addLayer()">＋ Layer</button>
+<!-- TOOLBAR -->
+<div id="toolbar">
+  <div class="tool-group">
+    <button class="tool-btn" onclick="tool='select'" title="Selection Tool (V)">↖</button>
+    <button class="tool-btn" onclick="tool='subselect'" title="Subselection Tool (A)">⬚</button>
+  </div>
+  <div class="tool-group">
+    <button class="tool-btn" onclick="tool='text'" title="Text Tool (T)">T</button>
+    <button class="tool-btn" onclick="tool='line'" title="Line Tool (N)">╱</button>
+  </div>
+  <div class="tool-group">
+    <button class="tool-btn active" onclick="setTool('brush')" title="Brush Tool (B)">🖌</button>
+    <button class="tool-btn" onclick="setTool('pencil')" title="Pencil Tool (Y)">✏</button>
+    <button class="tool-btn" onclick="setTool('eraser')" title="Eraser Tool (E)">🧽</button>
+  </div>
+  <div class="tool-group">
+    <button class="tool-btn" onclick="tool='fill'" title="Paint Bucket (K)">🪣</button>
+    <button class="tool-btn" onclick="tool='eyedropper'" title="Eyedropper (I)">💧</button>
+  </div>
+  <div class="tool-group">
+    <button class="tool-btn" onclick="tool='hand'" title="Hand Tool (H)">✋</button>
+    <button class="tool-btn" onclick="tool='zoom'" title="Zoom Tool (Z)">🔍</button>
+  </div>
 </div>
 
-<div id="main">
-  <div id="topbar">Adobe Animate</div>
-  <canvas id="stage" width="960" height="540"></canvas>
-  <div id="timeline"></div>
+<!-- MAIN CONTENT -->
+<div id="content">
+  
+  <!-- LEFT TOOLS PANEL -->
+  <div id="tools-panel">
+    <div class="tool-icon active" onclick="setTool('select')" title="Selection (V)">↖</div>
+    <div class="tool-icon" onclick="setTool('brush')" title="Brush (B)">🖌</div>
+    <div class="tool-icon" onclick="setTool('pencil')" title="Pencil (Y)">✏</div>
+    <div class="tool-icon" onclick="setTool('eraser')" title="Eraser (E)">🧽</div>
+    <div class="tool-separator"></div>
+    <div class="tool-icon" onclick="setTool('rectangle')" title="Rectangle (R)">▭</div>
+    <div class="tool-icon" onclick="setTool('circle')" title="Oval (O)">○</div>
+    <div class="tool-icon" onclick="setTool('text')" title="Text (T)">T</div>
+    <div class="tool-separator"></div>
+    <div class="tool-icon" onclick="setTool('hand')" title="Hand (H)">✋</div>
+    <div class="tool-icon" onclick="setTool('zoom')" title="Zoom (Z)">🔍</div>
+  </div>
+
+  <!-- STAGE CONTAINER -->
+  <div id="stage-container">
+    <div id="stage-wrapper">
+      <canvas id="stage" width="960" height="540"></canvas>
+      
+      <!-- ZOOM CONTROL -->
+      <div id="zoom-control">
+        <button class="zoom-btn" onclick="zoomOut()">−</button>
+        <div id="zoom-display">100%</div>
+        <button class="zoom-btn" onclick="zoomIn()">+</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div id="right-panel">
+    
+    <!-- PROPERTIES -->
+    <div>
+      <div class="panel-header">PROPERTIES</div>
+      <div id="properties">
+        <div class="property-row">
+          <div class="property-label">Frame:</div>
+          <div class="property-input" id="frame-display" style="background:#2d2d30;">1</div>
+        </div>
+        <div class="property-row">
+          <div class="property-label">FPS:</div>
+          <input type="number" class="property-input" id="fps-input" value="12" min="1" max="60" onchange="updateFPS()">
+        </div>
+        <div class="property-row">
+          <div class="property-label">Fill:</div>
+          <input type="color" id="color" value="#000000">
+        </div>
+        <div class="property-row">
+          <div class="property-label">Stroke:</div>
+          <input type="range" id="size" min="1" max="50" value="4" oninput="updateStrokeSize()">
+          <span id="stroke-size-display" style="margin-left:8px;font-size:10px;">4</span>
+        </div>
+        <div class="property-row">
+          <div class="property-label">Onion Skin:</div>
+          <input type="checkbox" id="onion-toggle" checked onchange="onion=this.checked;redraw()">
+        </div>
+      </div>
+    </div>
+
+    <!-- LIBRARY -->
+    <div style="flex:1;display:flex;flex-direction:column;">
+      <div class="panel-header">LIBRARY</div>
+      <div id="library">
+        <div style="color:#999;font-size:11px;padding:20px;text-align:center;">
+          No symbols in library
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- BOTTOM TIMELINE PANEL -->
+<div id="bottom-panel">
+  <div id="timeline-header">
+    <button class="timeline-btn" onclick="addLayer()">+ Layer</button>
+    <button class="timeline-btn" onclick="insertKeyframe()">Insert Keyframe (F6)</button>
+    <button class="timeline-btn" onclick="clearKeyframe()">Clear Keyframe</button>
+    <button class="timeline-btn" onclick="togglePlay()">▶ Play</button>
+    <button class="timeline-btn" onclick="exportSpritesheet()">Export Spritesheet</button>
+    <button class="timeline-btn" onclick="saveFLA()">Save Project</button>
+    <button class="timeline-btn" onclick="loadFLA()">Open Project</button>
+  </div>
+  
+  <div id="timeline-main">
+    <!-- LAYERS PANEL -->
+    <div id="layers-panel">
+      <div class="layer-header">
+        <div style="width:16px;">👁</div>
+        <div style="width:16px;">🔒</div>
+        <div style="flex:1;">Name</div>
+      </div>
+      <div id="layers-list"></div>
+    </div>
+
+    <!-- FRAMES PANEL -->
+    <div id="frames-panel">
+      <div class="frames-header" id="frames-header"></div>
+      <div id="frames-rows"></div>
+      <div id="playhead" style="left:0px;">
+        <div class="playhead-top"></div>
+        <div class="playhead-line"></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
 /* ===== CORE ===== */
-const canvas=document.getElementById("stage");
-const ctx=canvas.getContext("2d");
+const canvas = document.getElementById("stage");
+const ctx = canvas.getContext("2d", { willReadFrequently: true });
 
-let tool="brush";
-let drawing=false;
-let onion=true;
-let playing=false;
-let fps=12;
+let tool = "brush";
+let drawing = false;
+let onion = true;
+let playing = false;
+let fps = 12;
 
-const TOTAL_FRAMES=24;
+const TOTAL_FRAMES = 48;
 
 /* ===== VIEW (ZOOM/PAN) ===== */
-let view={x:0,y:0,zoom:1};
-let panning=false;
-let lastPan={x:0,y:0};
+let view = { x: 0, y: 0, zoom: 1 };
+let panning = false;
+let lastPan = { x: 0, y: 0 };
 
 /* ===== PROJECT ===== */
-const project={
-  currentFrame:0,
-  currentLayer:0,
-  layers:[]
+const project = {
+  currentFrame: 0,
+  currentLayer: 0,
+  layers: []
 };
 
 /* ===== INIT ===== */
 addLayer();
 buildTimeline();
 selectFrame(0);
+updateZoomDisplay();
+
+/* ===== TOOL SELECTION ===== */
+function setTool(t) {
+  tool = t;
+  document.querySelectorAll('.tool-icon').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tool-btn').forEach(el => el.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
 
 /* ===== LAYERS ===== */
-function addLayer(){
+function addLayer() {
   project.layers.unshift({
-    name:"Layer "+(project.layers.length+1),
-    frames:Array(TOTAL_FRAMES).fill(null)
+    name: "Layer " + (project.layers.length + 1),
+    visible: true,
+    locked: false,
+    frames: Array(TOTAL_FRAMES).fill(null).map(() => ({ hasContent: false, data: null }))
   });
-  project.currentLayer=0;
+  project.currentLayer = 0;
   redrawLayers();
+  buildTimeline();
 }
-function redrawLayers(){
-  const el=document.getElementById("layers");
-  el.innerHTML='<button onclick="addLayer()">＋ Layer</button>';
-  project.layers.forEach((l,i)=>{
-    const d=document.createElement("div");
-    d.className="layer"+(i===project.currentLayer?" active":"");
-    d.textContent=l.name;
-    d.onclick=()=>{
-      project.currentLayer=i;
+
+function redrawLayers() {
+  const el = document.getElementById("layers-list");
+  el.innerHTML = '';
+  
+  project.layers.forEach((layer, i) => {
+    const row = document.createElement("div");
+    row.className = "layer-row" + (i === project.currentLayer ? " active" : "");
+    
+    const controls = document.createElement("div");
+    controls.className = "layer-controls";
+    
+    const eyeBtn = document.createElement("button");
+    eyeBtn.className = "layer-ctrl-btn" + (layer.visible ? " active" : "");
+    eyeBtn.textContent = layer.visible ? "👁" : "⚫";
+    eyeBtn.onclick = (e) => {
+      e.stopPropagation();
+      layer.visible = !layer.visible;
       redrawLayers();
       redraw();
     };
-    el.appendChild(d);
+    
+    const lockBtn = document.createElement("button");
+    lockBtn.className = "layer-ctrl-btn" + (layer.locked ? " active" : "");
+    lockBtn.textContent = layer.locked ? "🔒" : "🔓";
+    lockBtn.onclick = (e) => {
+      e.stopPropagation();
+      layer.locked = !layer.locked;
+      redrawLayers();
+    };
+    
+    controls.appendChild(eyeBtn);
+    controls.appendChild(lockBtn);
+    
+    const name = document.createElement("div");
+    name.className = "layer-name";
+    name.textContent = layer.name;
+    name.ondblclick = () => {
+      const newName = prompt("Layer name:", layer.name);
+      if (newName) {
+        layer.name = newName;
+        redrawLayers();
+      }
+    };
+    
+    row.appendChild(controls);
+    row.appendChild(name);
+    row.onclick = () => {
+      project.currentLayer = i;
+      redrawLayers();
+      buildTimeline();
+      redraw();
+    };
+    
+    el.appendChild(row);
   });
 }
 
 /* ===== TIMELINE ===== */
-function buildTimeline(){
-  const tl=document.getElementById("timeline");
-  tl.innerHTML="";
-  for(let i=0;i<TOTAL_FRAMES;i++){
-    const f=document.createElement("div");
-    f.className="frame";
-    f.textContent=i+1;
-    f.onclick=()=>selectFrame(i);
-    tl.appendChild(f);
+function buildTimeline() {
+  // Build header with frame numbers
+  const header = document.getElementById("frames-header");
+  header.innerHTML = "";
+  
+  for (let i = 0; i < TOTAL_FRAMES; i++) {
+    const fn = document.createElement("div");
+    fn.className = "frame-number";
+    if ((i + 1) % 5 === 0) {
+      fn.classList.add("multiple-5");
+      fn.textContent = i + 1;
+    }
+    header.appendChild(fn);
+  }
+  
+  // Build frame rows for each layer
+  const rows = document.getElementById("frames-rows");
+  rows.innerHTML = "";
+  
+  project.layers.forEach((layer, layerIdx) => {
+    const layerFrames = document.createElement("div");
+    layerFrames.className = "layer-frames";
+    
+    for (let i = 0; i < TOTAL_FRAMES; i++) {
+      const cell = document.createElement("div");
+      cell.className = "frame-cell";
+      
+      if (layer.frames[i].hasContent) {
+        cell.classList.add("keyframe");
+        
+        // Check if next frames should be spans
+        let j = i + 1;
+        while (j < TOTAL_FRAMES && !layer.frames[j].hasContent && j < TOTAL_FRAMES) {
+          const spanCell = layerFrames.children[j];
+          if (spanCell) spanCell.classList.add("span");
+          j++;
+        }
+      }
+      
+      if (i === project.currentFrame && layerIdx === project.currentLayer) {
+        cell.classList.add("current");
+      }
+      
+      cell.onclick = () => selectFrame(i);
+      cell.ondblclick = () => {
+        selectFrame(i);
+        insertKeyframe();
+      };
+      
+      layerFrames.appendChild(cell);
+    }
+    
+    rows.appendChild(layerFrames);
+  });
+  
+  updatePlayhead();
+}
+
+function selectFrame(i) {
+  project.currentFrame = i;
+  document.getElementById("frame-display").textContent = i + 1;
+  buildTimeline();
+  updatePlayhead();
+  redraw();
+}
+
+function updatePlayhead() {
+  const playhead = document.getElementById("playhead");
+  playhead.style.left = (project.currentFrame * 20) + "px";
+}
+
+function insertKeyframe() {
+  const layer = project.layers[project.currentLayer];
+  if (!layer.frames[project.currentFrame].hasContent) {
+    layer.frames[project.currentFrame].hasContent = true;
+    // Copy previous keyframe if exists
+    for (let i = project.currentFrame - 1; i >= 0; i--) {
+      if (layer.frames[i].data) {
+        layer.frames[project.currentFrame].data = 
+          ctx.createImageData(layer.frames[i].data.width, layer.frames[i].data.height);
+        layer.frames[project.currentFrame].data.data.set(layer.frames[i].data.data);
+        break;
+      }
+    }
+    buildTimeline();
+    redraw();
   }
 }
-function selectFrame(i){
-  project.currentFrame=i;
-  document.querySelectorAll(".frame").forEach((f,idx)=>{
-    f.classList.toggle("active",idx===i);
-  });
+
+function clearKeyframe() {
+  const layer = project.layers[project.currentLayer];
+  layer.frames[project.currentFrame] = { hasContent: false, data: null };
+  buildTimeline();
   redraw();
 }
 
 /* ===== DRAW (MOUSE + TOUCH) ===== */
-function getPos(evt){
-  const r=canvas.getBoundingClientRect();
-  const e=evt.touches?evt.touches[0]:evt;
-  return{
-    x:(e.clientX-r.left-view.x)/view.zoom,
-    y:(e.clientY-r.top-view.y)/view.zoom
+function getPos(evt) {
+  const r = canvas.getBoundingClientRect();
+  const e = evt.touches ? evt.touches[0] : evt;
+  return {
+    x: (e.clientX - r.left - view.x) / view.zoom,
+    y: (e.clientY - r.top - view.y) / view.zoom
   };
 }
-function startDraw(e){
-  if(panning)return;
-  drawing=true;
-  const p=getPos(e);
-  ctx.beginPath();
-  ctx.moveTo(p.x,p.y);
+
+function startDraw(e) {
+  if (panning || tool === 'hand') {
+    panning = true;
+    lastPan = { x: e.clientX, y: e.clientY };
+    return;
+  }
+  
+  const layer = project.layers[project.currentLayer];
+  if (layer.locked) return;
+  
+  if (tool === 'brush' || tool === 'pencil' || tool === 'eraser') {
+    drawing = true;
+    const p = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
+  }
 }
-function moveDraw(e){
-  if(!drawing)return;
+
+function moveDraw(e) {
+  if (panning) {
+    view.x += e.clientX - lastPan.x;
+    view.y += e.clientY - lastPan.y;
+    lastPan = { x: e.clientX, y: e.clientY };
+    redraw();
+    return;
+  }
+  
+  if (!drawing) return;
   e.preventDefault();
-  const p=getPos(e);
-  ctx.strokeStyle=document.getElementById("color").value;
-  ctx.lineWidth=document.getElementById("size").value;
-  ctx.lineCap="round";
-  ctx.globalCompositeOperation=
-    tool==="eraser"?"destination-out":"source-over";
-  ctx.lineTo(p.x,p.y);
+  
+  const p = getPos(e);
+  ctx.strokeStyle = document.getElementById("color").value;
+  ctx.lineWidth = document.getElementById("size").value;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  ctx.globalCompositeOperation = 
+    tool === "eraser" ? "destination-out" : "source-over";
+  ctx.lineTo(p.x, p.y);
   ctx.stroke();
 }
-function endDraw(){
-  if(!drawing)return;
-  drawing=false;
+
+function endDraw() {
+  if (panning) {
+    panning = false;
+    return;
+  }
+  
+  if (!drawing) return;
+  drawing = false;
   ctx.beginPath();
-  project.layers[project.currentLayer]
-    .frames[project.currentFrame]=
-    ctx.getImageData(0,0,canvas.width,canvas.height);
+  
+  const layer = project.layers[project.currentLayer];
+  const currentFrameData = layer.frames[project.currentFrame];
+  currentFrameData.hasContent = true;
+  currentFrameData.data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  
+  buildTimeline();
 }
 
-canvas.addEventListener("mousedown",startDraw);
-canvas.addEventListener("mousemove",moveDraw);
-canvas.addEventListener("mouseup",endDraw);
-canvas.addEventListener("mouseleave",endDraw);
-canvas.addEventListener("touchstart",startDraw,{passive:false});
-canvas.addEventListener("touchmove",moveDraw,{passive:false});
-canvas.addEventListener("touchend",endDraw);
+canvas.addEventListener("mousedown", startDraw);
+canvas.addEventListener("mousemove", moveDraw);
+canvas.addEventListener("mouseup", endDraw);
+canvas.addEventListener("mouseleave", endDraw);
+canvas.addEventListener("touchstart", startDraw, { passive: false });
+canvas.addEventListener("touchmove", moveDraw, { passive: false });
+canvas.addEventListener("touchend", endDraw);
 
-/* ===== ZOOM / PAN ===== */
-canvas.addEventListener("wheel",e=>{
+/* ===== ZOOM ===== */
+canvas.addEventListener("wheel", e => {
   e.preventDefault();
-  view.zoom+=e.deltaY*-0.001;
-  view.zoom=Math.min(Math.max(0.2,view.zoom),5);
+  const delta = e.deltaY * -0.001;
+  view.zoom = Math.min(Math.max(0.1, view.zoom + delta), 8);
+  updateZoomDisplay();
   redraw();
-},{passive:false});
+}, { passive: false });
 
-window.addEventListener("keydown",e=>{
-  if(e.code==="Space")panning=true;
-});
-window.addEventListener("keyup",e=>{
-  if(e.code==="Space")panning=false;
-});
-
-canvas.addEventListener("mousedown",e=>{
-  if(!panning)return;
-  lastPan={x:e.clientX,y:e.clientY};
-});
-canvas.addEventListener("mousemove",e=>{
-  if(!panning)return;
-  view.x+=e.clientX-lastPan.x;
-  view.y+=e.clientY-lastPan.y;
-  lastPan={x:e.clientX,y:e.clientY};
+function zoomIn() {
+  view.zoom = Math.min(view.zoom + 0.1, 8);
+  updateZoomDisplay();
   redraw();
+}
+
+function zoomOut() {
+  view.zoom = Math.max(view.zoom - 0.1, 0.1);
+  updateZoomDisplay();
+  redraw();
+}
+
+function updateZoomDisplay() {
+  document.getElementById("zoom-display").textContent = 
+    Math.round(view.zoom * 100) + "%";
+}
+
+/* ===== PAN WITH SPACEBAR ===== */
+window.addEventListener("keydown", e => {
+  if (e.code === "Space" && !e.repeat) {
+    e.preventDefault();
+    panning = true;
+    canvas.style.cursor = "grab";
+  }
+});
+
+window.addEventListener("keyup", e => {
+  if (e.code === "Space") {
+    e.preventDefault();
+    panning = false;
+    canvas.style.cursor = "default";
+  }
 });
 
 /* ===== RENDER ===== */
-function redraw(){
-  ctx.setTransform(1,0,0,1,0,0);
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  ctx.setTransform(view.zoom,0,0,view.zoom,view.x,view.y);
+function redraw() {
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.setTransform(view.zoom, 0, 0, view.zoom, view.x, view.y);
 
-  project.layers.forEach((layer,idx)=>{
-    const frame=layer.frames[project.currentFrame];
-    if(!frame)return;
-    if(onion&&idx===project.currentLayer){
-      const prev=layer.frames[project.currentFrame-1];
-      if(prev){
-        ctx.globalAlpha=0.3;
-        ctx.putImageData(prev,0,0);
-        ctx.globalAlpha=1;
+  project.layers.slice().reverse().forEach((layer, idx) => {
+    if (!layer.visible) return;
+    
+    const reverseIdx = project.layers.length - 1 - idx;
+    const frame = layer.frames[project.currentFrame];
+    
+    // Onion skin for current layer
+    if (onion && reverseIdx === project.currentLayer && project.currentFrame > 0) {
+      const prev = layer.frames[project.currentFrame - 1];
+      if (prev && prev.data) {
+        ctx.globalAlpha = 0.3;
+        ctx.putImageData(prev.data, 0, 0);
+        ctx.globalAlpha = 1;
       }
     }
-    ctx.putImageData(frame,0,0);
+    
+    // Current frame
+    if (frame && frame.data) {
+      ctx.putImageData(frame.data, 0, 0);
+    }
   });
 }
 
 /* ===== PLAY ===== */
-function togglePlay(){playing=!playing;}
-setInterval(()=>{
-  if(!playing)return;
-  project.currentFrame=(project.currentFrame+1)%TOTAL_FRAMES;
-  selectFrame(project.currentFrame);
-},1000/fps);
+let playInterval = null;
+
+function togglePlay() {
+  playing = !playing;
+  
+  if (playing) {
+    playInterval = setInterval(() => {
+      project.currentFrame = (project.currentFrame + 1) % TOTAL_FRAMES;
+      selectFrame(project.currentFrame);
+    }, 1000 / fps);
+  } else {
+    clearInterval(playInterval);
+  }
+}
+
+function updateFPS() {
+  fps = parseInt(document.getElementById("fps-input").value);
+  if (playing) {
+    clearInterval(playInterval);
+    playInterval = setInterval(() => {
+      project.currentFrame = (project.currentFrame + 1) % TOTAL_FRAMES;
+      selectFrame(project.currentFrame);
+    }, 1000 / fps);
+  }
+}
+
+function updateStrokeSize() {
+  document.getElementById("stroke-size-display").textContent = 
+    document.getElementById("size").value;
+}
 
 /* ===== EXPORT ===== */
-function exportSpritesheet(){
-  const c=document.createElement("canvas");
-  c.width=canvas.width*TOTAL_FRAMES;
-  c.height=canvas.height;
-  const cx=c.getContext("2d");
-
-  for(let i=0;i<TOTAL_FRAMES;i++){
-    project.currentFrame=i;
-    redraw();
-    cx.drawImage(canvas,i*canvas.width,0);
+function exportSpritesheet() {
+  const c = document.createElement("canvas");
+  c.width = canvas.width * TOTAL_FRAMES;
+  c.height = canvas.height;
+  const cx = c.getContext("2d");
+  
+  const oldFrame = project.currentFrame;
+  
+  for (let i = 0; i < TOTAL_FRAMES; i++) {
+    project.currentFrame = i;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    project.layers.slice().reverse().forEach(layer => {
+      if (!layer.visible) return;
+      const frame = layer.frames[i];
+      if (frame && frame.data) {
+        ctx.putImageData(frame.data, 0, 0);
+      }
+    });
+    
+    cx.drawImage(canvas, i * canvas.width, 0);
   }
-  const a=document.createElement("a");
-  a.href=c.toDataURL("image/png");
-  a.download="spritesheet.png";
+  
+  project.currentFrame = oldFrame;
+  redraw();
+  
+  const a = document.createElement("a");
+  a.href = c.toDataURL("image/png");
+  a.download = "spritesheet.png";
   a.click();
 }
 
-/* ===== SAVE / LOAD .FLA ===== */
-function saveFLA(){
-  const blob=new Blob([JSON.stringify(project)],
-    {type:"application/octet-stream"});
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download="project.fla";
+/* ===== SAVE / LOAD ===== */
+function saveFLA() {
+  const saveData = {
+    ...project,
+    fps: fps
+  };
+  
+  const blob = new Blob([JSON.stringify(saveData)], 
+    { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "project.fla";
   a.click();
 }
-function loadFLA(){
-  const i=document.createElement("input");
-  i.type="file";
-  i.accept=".fla";
-  i.onchange=e=>{
-    const r=new FileReader();
-    r.onload=()=>{
-      Object.assign(project,JSON.parse(r.result));
+
+function loadFLA() {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".fla";
+  input.onchange = e => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const data = JSON.parse(reader.result);
+      Object.assign(project, data);
+      
+      // Restore ImageData objects
+      project.layers.forEach(layer => {
+        layer.frames.forEach(frame => {
+          if (frame.data && frame.data.data) {
+            const imageData = ctx.createImageData(frame.data.width, frame.data.height);
+            imageData.data.set(frame.data.data);
+            frame.data = imageData;
+          }
+        });
+      });
+      
+      if (data.fps) {
+        fps = data.fps;
+        document.getElementById("fps-input").value = fps;
+      }
+      
       redrawLayers();
       buildTimeline();
       selectFrame(project.currentFrame);
     };
-    r.readAsText(e.target.files[0]);
+    reader.readAsText(e.target.files[0]);
   };
-  i.click();
+  input.click();
 }
+
+/* ===== KEYBOARD SHORTCUTS ===== */
+window.addEventListener("keydown", e => {
+  if (e.target.tagName === 'INPUT') return;
+  
+  switch(e.key.toLowerCase()) {
+    case 'b': setTool('brush'); break;
+    case 'y': setTool('pencil'); break;
+    case 'e': setTool('eraser'); break;
+    case 'h': setTool('hand'); break;
+    case 'z': setTool('zoom'); break;
+    case 'v': setTool('select'); break;
+  }
+  
+  if (e.key === 'F6') {
+    e.preventDefault();
+    insertKeyframe();
+  }
+});
+
 </script>
 
 </body>
