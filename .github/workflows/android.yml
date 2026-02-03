@@ -32,9 +32,6 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Build web
-        run: npm run build
-
       - name: Capacitor sync
         run: npx cap sync android
 
