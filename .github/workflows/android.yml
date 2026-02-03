@@ -1,4 +1,4 @@
-name: Android Build
+name: Android Release Build
 
 on:
   push:
@@ -10,54 +10,53 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Baixa o código
       - name: Checkout
         uses: actions/checkout@v4
 
-      # 2️⃣ Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      # 3️⃣ Limpa cache (evita erro de integridade npm)
       - name: Clean npm cache
         run: npm cache clean --force
 
-      # 4️⃣ Instala dependências
       - name: Install dependencies
         run: npm install --no-audit --no-fund --legacy-peer-deps
 
-      # 5️⃣ Java (Android exige)
       - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      # 6️⃣ Gera ícones a partir de resources/icon.png
-      - name: Generate app assets (icon)
-        run: npx capacitor-assets generate
-
-      # 7️⃣ Adiciona Android se não existir
       - name: Add Android platform if missing
         run: |
           if [ ! -d "android" ]; then
             npx cap add android
           fi
 
-      # 8️⃣ Sincroniza Capacitor
       - name: Capacitor sync
         run: npx cap sync android
 
-      # 9️⃣ Build APK (debug)
-      - name: Build APK Debug
-        working-directory: android
-        run: ./gradlew assembleDebug
+      # 🔐 Decodifica o keystore
+      - name: Decode keystore
+        run: |
+          mkdir -p android/app
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/app/release.keystore
 
-      # 🔟 Upload do APK
-      - name: Upload APK
+      # 🚀 Build APK RELEASE assinado
+      - name: Build Signed APK Release
+        working-directory: android
+        run: |
+          ./gradlew assembleRelease \
+            -Pandroid.injected.signing.store.file=app/release.keystore \
+            -Pandroid.injected.signing.store.password=${{ secrets.KEYSTORE_PASSWORD }} \
+            -Pandroid.injected.signing.key.alias=${{ secrets.KEY_ALIAS }} \
+            -Pandroid.injected.signing.key.password=${{ secrets.KEY_PASSWORD }}
+
+      - name: Upload APK Release
         uses: actions/upload-artifact@v4
         with:
-          name: Adobe-Animate-debug
-          path: android/app/build/outputs/apk/debug/*.apk
+          name: Adobe-Animate-release
+          path: android/app/build/outputs/apk/release/*.apk
