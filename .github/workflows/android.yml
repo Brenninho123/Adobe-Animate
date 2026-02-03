@@ -10,20 +10,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 20
+
+      - name: Clean npm cache
+        run: npm cache clean --force
 
       - name: Install dependencies
         run: npm install --no-audit --no-fund --legacy-peer-deps
 
-      - uses: actions/setup-java@v4
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
+      # 🔥 GERA ÍCONES A PARTIR DE resources/icon.png
+      - name: Generate app assets (icon)
+        run: npx cap assets
+
+      # 🔥 ADICIONA ANDROID SE NÃO EXISTIR
       - name: Add Android platform if missing
         run: |
           if [ ! -d "android" ]; then
@@ -40,5 +51,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug
+          name: Adobe-Animate-debug
           path: android/app/build/outputs/apk/debug/*.apk
